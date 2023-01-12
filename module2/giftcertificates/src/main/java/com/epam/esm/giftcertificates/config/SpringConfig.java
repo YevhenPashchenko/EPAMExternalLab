@@ -1,12 +1,18 @@
 package com.epam.esm.giftcertificates.config;
 
-import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
+import com.epam.esm.giftcertificates.dao.GiftCertificateQueryBuilder;
+import com.epam.esm.giftcertificates.dao.impl.GiftCertificateQueryBuilderImpl;
+import liquibase.integration.spring.SpringLiquibase;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -18,48 +24,59 @@ import java.util.Objects;
 @ComponentScan("com.epam.esm.giftcertificates")
 @PropertySource("classpath:jdbc.properties")
 @EnableWebMvc
-@AllArgsConstructor
+@EnableTransactionManagement
+@RequiredArgsConstructor
 public class SpringConfig implements WebMvcConfigurer {
 
     private final Environment environment;
 
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-        String parameterName = "mediaType";
-        String extension = "json";
-        MediaType jsonMediaType = MediaType.APPLICATION_JSON;
-
         configurer.favorParameter(true)
-                .parameterName(parameterName)
+                .parameterName(ConfigurationUtil.PARAMETER_NAME)
                 .ignoreAcceptHeader(false)
                 .useRegisteredExtensionsOnly(false)
-                .defaultContentType(jsonMediaType)
-                .mediaType(extension, jsonMediaType);
-    }
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
+                .defaultContentType(MediaType.APPLICATION_JSON)
+                .mediaType(ConfigurationUtil.MEDIA_TYPE_EXTENSION, MediaType.APPLICATION_JSON);
     }
 
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        String driverClassName = Objects.requireNonNull(environment.getProperty("jdbc.driver"));
-        String url = environment.getProperty("jdbc.url");
-        String userName = environment.getProperty("jdbc.username");
-        String userPassword = environment.getProperty("jdbc.password");
 
-        dataSource.setDriverClassName(driverClassName);
-        dataSource.setUrl(url);
-        dataSource.setUsername(userName);
-        dataSource.setPassword(userPassword);
+        dataSource.setDriverClassName(Objects
+                .requireNonNull(environment.getProperty(ConfigurationUtil.DRIVER_CLASS_NAME_PROPERTY_KEY)));
+        dataSource.setUrl(environment.getProperty(ConfigurationUtil.URL_PROPERTY_KEY));
+        dataSource.setUsername(environment.getProperty(ConfigurationUtil.USER_NAME_PROPERTY_KEY));
+        dataSource.setPassword(environment.getProperty(ConfigurationUtil.USER_PASSWORD_PROPERTY_KEY));
 
         return dataSource;
     }
 
     @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dataSource());
+    }
+
+    @Bean
     public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(dataSource());
+    }
+
+    @Bean
+    @RequestScope
+    public GiftCertificateQueryBuilder giftCertificateQueryBuilder() {
+        return new GiftCertificateQueryBuilderImpl();
+    }
+
+    @Bean
+    public SpringLiquibase liquibase() {
+        SpringLiquibase liquibase = new SpringLiquibase();
+
+        liquibase.setChangeLog(ConfigurationUtil.LIQUIBASE_CHANGELOG_MASTER_PATH);
+        liquibase.setDataSource(dataSource());
+        liquibase.setDefaultSchema(ConfigurationUtil.LIQUIBASE_DEFAULT_SCHEMA);
+
+        return liquibase;
     }
 }

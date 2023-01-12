@@ -1,8 +1,8 @@
 package com.epam.esm.giftcertificates.controllers;
 
-import com.epam.esm.giftcertificates.entities.dto.TagDTO;
+import com.epam.esm.giftcertificates.dto.TagDto;
 import com.epam.esm.giftcertificates.services.TagService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,25 +10,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tags")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TagController {
 
     private final TagService tagService;
 
-    private static final String JSON_MEDIA_TYPE = MediaType.APPLICATION_JSON_VALUE;
-
-    @PostMapping()
-    public void create(@RequestBody TagDTO tagDTO) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void create(@RequestBody TagDto tagDTO) {
         tagService.create(tagDTO);
     }
 
-    @GetMapping(produces = JSON_MEDIA_TYPE)
-    public List<TagDTO> get() {
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<TagDto> get() {
         return tagService.get();
     }
 
-    @GetMapping(value = "/{id}", produces = JSON_MEDIA_TYPE)
-    public TagDTO getById(@PathVariable("id") long id) {
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public TagDto getById(@PathVariable("id") long id) {
         return tagService.getById(id);
     }
 

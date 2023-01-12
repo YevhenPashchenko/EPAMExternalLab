@@ -1,9 +1,9 @@
-package com.epam.esm.giftcertificates.entities;
+package com.epam.esm.giftcertificates.dto;
 
 import lombok.Data;
 
 @Data
-public class Tag {
+public class TagDto {
 
     private long id;
     private String name;

@@ -1,26 +1,21 @@
 package com.epam.esm.giftcertificates.services.impl;
 
-import com.epam.esm.giftcertificates.dao.GiftCertificateToTagDAO;
-import com.epam.esm.giftcertificates.entities.GiftCertificateToTag;
-import com.epam.esm.giftcertificates.entities.dto.GiftCertificateToTagDTO;
+import com.epam.esm.giftcertificates.dao.GiftCertificateToTagDao;
+import com.epam.esm.giftcertificates.dto.GiftCertificateToTagDto;
+import com.epam.esm.giftcertificates.mappers.EntityDtoMapper;
 import com.epam.esm.giftcertificates.services.GiftCertificateToTagService;
-import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-@Component
-@AllArgsConstructor
+@Service
+@RequiredArgsConstructor
 public class GiftCertificateToTagServiceImpl implements GiftCertificateToTagService {
 
-    private final GiftCertificateToTagDAO giftCertificateToTagDAO;
-    private final ModelMapper modelMapper;
+    private final GiftCertificateToTagDao giftCertificateToTagDao;
+    private final EntityDtoMapper entityDtoMapper;
 
     @Override
-    public void create(GiftCertificateToTagDTO giftCertificateToTagDTO) {
-        giftCertificateToTagDAO.create(convertToEntity(giftCertificateToTagDTO));
-    }
-
-    private GiftCertificateToTag convertToEntity(GiftCertificateToTagDTO giftCertificateToTagDTO) {
-        return modelMapper.map(giftCertificateToTagDTO, GiftCertificateToTag.class);
+    public void create(GiftCertificateToTagDto giftCertificateToTagDTO) {
+        giftCertificateToTagDao.create(entityDtoMapper.giftCertificateToTagDtoToGiftCertificateToTag(giftCertificateToTagDTO));
     }
 }

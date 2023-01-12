@@ -1,0 +1,101 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1673004554518-1
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: tag
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: tags_pkey
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: name_unique
+                    nullable: false
+  - changeSet:
+      id: 1673004554518-2
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: gift_certificate
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: gift_certificates_pkey
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: decimal
+                  constraints:
+                    nullable: false
+              - column:
+                  name: duration
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_update_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 1673004554518-3
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: gc_tag
+            columns:
+              - column:
+                  name: gc_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: gift_certificate_fkey
+                    referencedTableName: gift_certificate
+                    referencedColumnNames: id
+                    deferrable: false
+                    initiallyDeferred: false
+                    onDelete: cascade
+                    onUpdate: no action
+                    validateForeignKey: true
+                    nullable: false
+              - column:
+                  name: tag_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: tag_fkey
+                    referencedTableName: tag
+                    referencedColumnNames: id
+                    deferrable: false
+                    initiallyDeferred: false
+                    onDelete: cascade
+                    onUpdate: no action
+                    validateForeignKey: true
+                    nullable: false
