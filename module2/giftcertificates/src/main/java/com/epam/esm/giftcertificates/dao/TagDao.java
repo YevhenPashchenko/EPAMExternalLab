@@ -1,49 +1,49 @@
 package com.epam.esm.giftcertificates.dao;
 
-import com.epam.esm.giftcertificates.entities.GiftCertificate;
-import com.epam.esm.giftcertificates.entities.Tag;
+import com.epam.esm.giftcertificates.entity.GiftCertificate;
+import com.epam.esm.giftcertificates.entity.Tag;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Interface that provides methods that must be implemented for CRUD operations with {@link Tag}
- * in repository layer.
+ * API provides methods for basic CRD operations with {@link TagDao} objects.
  *
  * @author Yevhen Pashchenko
  */
 public interface TagDao {
 
     /**
-     * Method that create new {@link Tag} in database.
-     * @param tag {@link Tag} entity which data will be passed in database.
-     * @return created {@link Tag} id.
+     * Saves {@link Tag} object.
+     * @param tag given {@link Tag} object which data will be saved.
+     * @return saved {@link Tag} object {@code id}.
      */
-    long create(Tag tag);
+    long createTag(Tag tag);
 
     /**
-     * Method that select {@link Tag}.
-     * @return list of selected {@link Tag}.
+     * Returns list of {@link Tag} objects.
+     * @return list of {@link Tag} objects.
      */
-    List<Tag> get();
+    List<Tag> getListOfTag();
 
     /**
-     * Method that select {@link Tag} by id.
-     * @param id {@link Tag}.
-     * @return {@link Optional<Tag>} if entity with this id exist in database or empty {@link Optional}.
+     * Returns {@link Optional} object with {@link Tag} object by its {@code id} if it with this id exists otherwise
+     * returns empty {@link Optional} object.
+     * @param id {@link Tag} object {@code id}.
+     * @return {@link Optional} object.
      */
-    Optional<Tag> getById(long id);
+    Optional<Tag> getTagById(long id);
 
     /**
-     * Method that select {@link Tag} by {@link GiftCertificate} id.
-     * @param id {@link GiftCertificate}.
-     * @return list of selected {@link Tag}.
+     * Returns list of {@link Tag} objects referenced with {@link GiftCertificate} object by its {@code id}.
+     * @param id {@link GiftCertificate} object {@code id}.
+     * @return list of {@link Tag} objects.
      */
-    List<Tag> getByGiftCertificateId(long id);
+    List<Tag> getListOfTagByGiftCertificateId(long id);
 
     /**
-     * Method that delete {@link Tag} by id.
-     * @param id {@link Tag}.
+     * Deletes {@link Tag} object by its {@code id}.
+     * @param id given {@code id}.
      */
-    void delete(long id);
+    void deleteTag(long id);
 }

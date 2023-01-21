@@ -1,18 +1,17 @@
 package com.epam.esm.giftcertificates.dao;
 
-import com.epam.esm.giftcertificates.entities.GiftCertificateToTag;
+import com.epam.esm.giftcertificates.entity.GiftCertificateToTag;
 
 /**
- * Interface that provides methods that must be implemented for CRUD operations with {@link GiftCertificateToTag}
- * in repository layer.
+ * The {@link GiftCertificateToTagDao} interface provides method for create {@link GiftCertificateToTag} objects.
  *
  * @author Yevhen Pashchenko
  */
 public interface GiftCertificateToTagDao {
 
     /**
-     * Method that create new {@link GiftCertificateToTag} entity in database.
-     * @param giftCertificateToTag {@link GiftCertificateToTag} entity which data will be passed in database.
+     * Saves {@link GiftCertificateToTag} object.
+     * @param giftCertificateToTag given {@link GiftCertificateToTag} object which data will be saved.
      */
-    void create(GiftCertificateToTag giftCertificateToTag);
+    void createGiftCertificateToTagLink(GiftCertificateToTag giftCertificateToTag);
 }

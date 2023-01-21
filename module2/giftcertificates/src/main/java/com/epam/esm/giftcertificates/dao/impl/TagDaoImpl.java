@@ -1,8 +1,8 @@
 package com.epam.esm.giftcertificates.dao.impl;
 
 import com.epam.esm.giftcertificates.dao.TagDao;
-import com.epam.esm.giftcertificates.dao.util.TagQueriesUtil;
-import com.epam.esm.giftcertificates.entities.Tag;
+import com.epam.esm.giftcertificates.constant.TagDaoConstants;
+import com.epam.esm.giftcertificates.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,11 +20,11 @@ public class TagDaoImpl implements TagDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public long create(Tag tag) {
+    public long createTag(Tag tag) {
         var keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
-            var ps = con.prepareStatement(TagQueriesUtil.CREATE_TAG_QUERY, new String[] {"id"});
+            var ps = con.prepareStatement(TagDaoConstants.CREATE_TAG_QUERY, new String[] {"id"});
             ps.setString(1, tag.getName());
             return ps;
         }, keyHolder);
@@ -33,24 +33,24 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public List<Tag> get() {
-        return jdbcTemplate.query(TagQueriesUtil.SELECT_ALL_TAGS_QUERY, new BeanPropertyRowMapper<>(Tag.class));
+    public List<Tag> getListOfTag() {
+        return jdbcTemplate.query(TagDaoConstants.SELECT_ALL_TAGS_QUERY, new BeanPropertyRowMapper<>(Tag.class));
     }
 
     @Override
-    public Optional<Tag> getById(long id) {
-        return jdbcTemplate.query(TagQueriesUtil.SELECT_TAG_BY_ID_QUERY, new Object[] {id}, new int[] {Types.BIGINT},
+    public Optional<Tag> getTagById(long id) {
+        return jdbcTemplate.query(TagDaoConstants.SELECT_TAG_BY_ID_QUERY, new Object[] {id}, new int[] {Types.BIGINT},
                         new BeanPropertyRowMapper<>(Tag.class)).stream().findAny();
     }
 
     @Override
-    public List<Tag> getByGiftCertificateId(long id) {
-        return jdbcTemplate.query(TagQueriesUtil.SELECT_TAGS_BY_GIFT_CERTIFICATE_ID, new Object[] {id},
+    public List<Tag> getListOfTagByGiftCertificateId(long id) {
+        return jdbcTemplate.query(TagDaoConstants.SELECT_TAGS_BY_GIFT_CERTIFICATE_ID_QUERY, new Object[] {id},
                 new int[] {Types.BIGINT}, new BeanPropertyRowMapper<>(Tag.class));
     }
 
     @Override
-    public void delete(long id) {
-        jdbcTemplate.update(TagQueriesUtil.DELETE_TAG_QUERY, id);
+    public void deleteTag(long id) {
+        jdbcTemplate.update(TagDaoConstants.DELETE_TAG_QUERY, id);
     }
 }

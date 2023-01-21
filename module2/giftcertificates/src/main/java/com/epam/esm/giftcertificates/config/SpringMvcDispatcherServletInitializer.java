@@ -1,5 +1,6 @@
 package com.epam.esm.giftcertificates.config;
 
+import com.epam.esm.giftcertificates.constant.ConfigurationConstants;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -21,7 +22,7 @@ public class SpringMvcDispatcherServletInitializer extends AbstractAnnotationCon
     @NonNull
     protected String[] getServletMappings() {
         return new String[] {
-                ConfigurationUtil.SERVLET_MAPPING
+                ConfigurationConstants.SERVLET_MAPPING
         };
     }
 }

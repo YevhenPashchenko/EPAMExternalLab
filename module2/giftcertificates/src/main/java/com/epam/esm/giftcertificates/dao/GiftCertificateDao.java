@@ -1,76 +1,77 @@
 package com.epam.esm.giftcertificates.dao;
 
-import com.epam.esm.giftcertificates.entities.GiftCertificate;
-import com.epam.esm.giftcertificates.entities.GiftCertificateSortingParameters;
+import com.epam.esm.giftcertificates.entity.GiftCertificate;
+import com.epam.esm.giftcertificates.entity.GiftCertificateSortingParameters;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Interface that provides methods that must be implemented for CRUD operations with {@link GiftCertificate}
- * in repository layer.
+ * API provides methods for basic CRUD operations with {@link GiftCertificate} objects.
  *
  * @author Yevhen Pashchenko
  */
 public interface GiftCertificateDao {
 
     /**
-     * Method that creates new {@link GiftCertificate} in database.
-     * @param giftCertificate {@link GiftCertificate} entity which data will be passed in database.
-     * @return created {@link GiftCertificate} id.
+     * Saves {@link GiftCertificate} object.
+     * @param giftCertificate given {@link GiftCertificate} object which data will be saved.
+     * @return saved {@link GiftCertificate} object {@code id}.
      */
-    long create(GiftCertificate giftCertificate);
+    long createGiftCertificate(GiftCertificate giftCertificate);
 
     /**
-     * Method that selects {@link GiftCertificate} for current page.
-     * @param pageNumber current page number.
-     * @return list of selected {@link GiftCertificate}.
+     * Returns list of {@link GiftCertificate} objects from given {@code page}.
+     * @param pageNumber {@code page}.
+     * @return list of {@link GiftCertificate} objects.
      */
-    List<GiftCertificate> get(int pageNumber);
+    List<GiftCertificate> getListOfGiftCertificateForPage(int pageNumber);
 
     /**
-     * Method that selects {@link GiftCertificate} by id.
-     * @param id {@link GiftCertificate}.
-     * @return {@link Optional<GiftCertificate>} if entity with this id exists in database or empty {@link Optional}.
+     * Returns {@link Optional} object with {@link GiftCertificate} object by its {@code id} if it with this id exists
+     * otherwise returns empty {@link Optional} object.
+     * @param id {@link GiftCertificate} object {@code id}.
+     * @return {@link Optional} object.
      */
-    Optional<GiftCertificate> getById(long id);
+    Optional<GiftCertificate> getGiftCertificateById(long id);
 
     /**
-     * Method that selects {@link GiftCertificate} for current page by parameters that passed in
-     * {@link GiftCertificateSortingParameters}.
-     * @param pageNumber current page number.
-     * @param giftCertificateSortingParameters {@link GiftCertificateSortingParameters}.
-     * @return list of selected {@link GiftCertificate}.
+     * Returns list of {@link GiftCertificate} objects by parameters given in {@link GiftCertificateSortingParameters}
+     * object with given {@code page}.
+     * @param pageNumber {@code page}.
+     * @param giftCertificateSortingParameters {@link GiftCertificateSortingParameters} object.
+     * @return list of {@link GiftCertificate} objects.
      */
-    List<GiftCertificate> getByParameters(int pageNumber, GiftCertificateSortingParameters giftCertificateSortingParameters);
+    List<GiftCertificate> getListOfGiftCertificateByParametersForPage(int pageNumber,
+                                                                      GiftCertificateSortingParameters giftCertificateSortingParameters);
 
     /**
-     * Method that updates {@link GiftCertificate} name.
-     * @param giftCertificate {@link GiftCertificate} with new name.
+     * Changes {@link GiftCertificate} object {@code name}.
+     * @param giftCertificate {@link GiftCertificate} object with new {@code name}.
      */
-    void updateName(GiftCertificate giftCertificate);
+    void updateGiftCertificateName(GiftCertificate giftCertificate);
 
     /**
-     * Method that updates {@link GiftCertificate} description.
-     * @param giftCertificate {@link GiftCertificate} with new description.
+     * Changes {@link GiftCertificate} object {@code description}.
+     * @param giftCertificate {@link GiftCertificate} object with new {@code description}.
      */
-    void updateDescription(GiftCertificate giftCertificate);
+    void updateGiftCertificateDescription(GiftCertificate giftCertificate);
 
     /**
-     * Method that updates {@link GiftCertificate} price.
-     * @param giftCertificate {@link GiftCertificate} with new price.
+     * Changes {@link GiftCertificate} object {@code price}.
+     * @param giftCertificate {@link GiftCertificate} object with new {@code price}.
      */
-    void updatePrice(GiftCertificate giftCertificate);
+    void updateGiftCertificatePrice(GiftCertificate giftCertificate);
 
     /**
-     * Method that updates {@link GiftCertificate} duration.
-     * @param giftCertificate {@link GiftCertificate} with new duration.
+     * Changes {@link GiftCertificate} object {@code duration}.
+     * @param giftCertificate {@link GiftCertificate} object with new {@code duration}.
      */
-    void updateDuration(GiftCertificate giftCertificate);
+    void updateGiftCertificateDuration(GiftCertificate giftCertificate);
 
     /**
-     * Method that deletes {@link GiftCertificate} by id.
-     * @param id {@link GiftCertificate}.
+     * Deletes {@link GiftCertificate} object by its {@code id}.
+     * @param id {@code id}.
      */
-    void delete(long id);
+    void deleteGiftCertificate(long id);
 }

@@ -1,7 +1,8 @@
 package com.epam.esm.giftcertificates.dao.impl;
 
+import com.epam.esm.giftcertificates.constant.DaoConstants;
 import com.epam.esm.giftcertificates.dao.GiftCertificateQueryBuilder;
-import com.epam.esm.giftcertificates.dao.util.GiftCertificateQueriesUtil;
+import com.epam.esm.giftcertificates.constant.GiftCertificateQueryBuilderConstants;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -11,38 +12,26 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
 
     private boolean searchByTagNameApplied = false;
     private boolean sortByNameApplied = false;
-    private final StringBuilder query = new StringBuilder();
-    private final List<Object> parametersValues = new ArrayList<>();
-    private final List<Integer> parametersTypes = new ArrayList<>();
+    private final StringBuilder queryBuilder = new StringBuilder();
+    private final List<Object> parametersValuesList = new ArrayList<>();
+    private final List<Integer> parametersTypesList = new ArrayList<>();
+    private String query;
+    private Object[] parametersValues;
+    private int[] parametersTypes;
 
-    @Override
-    public String getQuery() {
-        return query.toString();
-    }
-
-    @Override
-    public Object[] getParametersValues() {
-        return parametersValues.toArray();
-    }
-
-    @Override
-    public int[] getParametersTypes() {
-        var arrayParametersTypes = new int[parametersTypes.size()];
-        for (int i = 0; i < parametersTypes.size(); i++) {
-            arrayParametersTypes[i] = parametersTypes.get(i);
-        }
-        return arrayParametersTypes;
+    public static GiftCertificateQueryBuilderImpl builder() {
+        return new GiftCertificateQueryBuilderImpl();
     }
 
     @Override
     public GiftCertificateQueryBuilder applySearchByTagName(String tagName) {
         if (tagName != null) {
-            query.append(GiftCertificateQueriesUtil.SELECT_GIFT_CERTIFICATES_BY_TAG_NAME);
-            parametersValues.add(tagName);
-            parametersTypes.add(Types.VARCHAR);
+            queryBuilder.append(GiftCertificateQueryBuilderConstants.SELECT_GIFT_CERTIFICATES_BY_TAG_NAME_QUERY);
+            parametersValuesList.add(tagName);
+            parametersTypesList.add(Types.VARCHAR);
             searchByTagNameApplied = true;
         } else {
-            query.append(GiftCertificateQueriesUtil.SELECT_GIFT_CERTIFICATES_BY_PARAMETERS);
+            queryBuilder.append(GiftCertificateQueryBuilderConstants.SELECT_ALL_GIFT_CERTIFICATES_QUERY);
         }
         return this;
     }
@@ -51,16 +40,18 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
     public GiftCertificateQueryBuilder applySearchByPartOfName(String partName) {
         if (partName != null) {
             if (searchByTagNameApplied) {
-                query.append(" ")
-                        .append(GiftCertificateQueriesUtil.ADD_AND);
+                queryBuilder.append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                        .append(GiftCertificateQueryBuilderConstants.AND);
             } else {
-                query.append(" ")
-                        .append(GiftCertificateQueriesUtil.ADD_WHERE);
+                queryBuilder.append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                        .append(GiftCertificateQueryBuilderConstants.WHERE);
             }
-            query.append(" ")
-                    .append(GiftCertificateQueriesUtil.ADD_SELECT_BY_PART_OF_NAME);
-            parametersValues.add(partName + "%");
-            parametersTypes.add(Types.VARCHAR);
+            queryBuilder.append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                    .append(GiftCertificateQueryBuilderConstants.GIFT_CERTIFICATE_DOT_NAME)
+                    .append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                    .append(GiftCertificateQueryBuilderConstants.LIKE);
+            parametersValuesList.add(partName + GiftCertificateQueryBuilderConstants.PERCENT_WILDCARD);
+            parametersTypesList.add(Types.VARCHAR);
         }
         return this;
     }
@@ -69,16 +60,18 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
     public GiftCertificateQueryBuilder applySearchByPartOfDescription(String partDescription) {
         if (partDescription != null) {
             if (searchByTagNameApplied) {
-                query.append(" ")
-                        .append(GiftCertificateQueriesUtil.ADD_AND);
+                queryBuilder.append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                        .append(GiftCertificateQueryBuilderConstants.AND);
             } else {
-                query.append(" ")
-                        .append(GiftCertificateQueriesUtil.ADD_WHERE);
+                queryBuilder.append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                        .append(GiftCertificateQueryBuilderConstants.WHERE);
             }
-            query.append(" ")
-                    .append(GiftCertificateQueriesUtil.ADD_SELECT_BY_PART_OF_DESCRIPTION);
-            parametersValues.add(partDescription + "%");
-            parametersTypes.add(Types.VARCHAR);
+            queryBuilder.append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                    .append(GiftCertificateQueryBuilderConstants.GIFT_CERTIFICATE_DOT_DESCRIPTION)
+                    .append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                    .append(GiftCertificateQueryBuilderConstants.LIKE);
+            parametersValuesList.add(partDescription + GiftCertificateQueryBuilderConstants.PERCENT_WILDCARD);
+            parametersTypesList.add(Types.VARCHAR);
         }
         return this;
     }
@@ -86,11 +79,11 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
     @Override
     public GiftCertificateQueryBuilder applySortByName(String order) {
         if (order != null) {
-            query.append(" ")
-                    .append(GiftCertificateQueriesUtil.ADD_ORDER_BY)
-                    .append(" ")
-                    .append(GiftCertificateQueriesUtil.ADD_NAME)
-                    .append(" ")
+            queryBuilder.append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                    .append(GiftCertificateQueryBuilderConstants.ORDER_BY)
+                    .append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                    .append(GiftCertificateQueryBuilderConstants.GIFT_CERTIFICATE_DOT_NAME)
+                    .append(GiftCertificateQueryBuilderConstants.WHITESPACE)
                     .append(order);
             sortByNameApplied = true;
         }
@@ -101,24 +94,59 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
     public GiftCertificateQueryBuilder applySortByDate(String order) {
         if (order != null) {
             if (sortByNameApplied) {
-                query.append(", ");
+                queryBuilder.append(GiftCertificateQueryBuilderConstants.COMMA);
             } else {
-                query.append(" ")
-                        .append(GiftCertificateQueriesUtil.ADD_ORDER_BY)
-                        .append(" ");
+                queryBuilder.append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                        .append(GiftCertificateQueryBuilderConstants.ORDER_BY)
+                        .append(GiftCertificateQueryBuilderConstants.WHITESPACE);
             }
-            query.append(GiftCertificateQueriesUtil.ADD_DATE)
-                    .append(" ")
+            queryBuilder.append(GiftCertificateQueryBuilderConstants.GIFT_CERTIFICATE_DOT_LAST_UPDATE_DATE)
+                    .append(GiftCertificateQueryBuilderConstants.WHITESPACE)
                     .append(order);
         }
         return this;
     }
 
     @Override
-    public void applyPagination(int pageNumber) {
-        var offset = (pageNumber - 1) * GiftCertificateQueriesUtil.LIMIT;
-        query.append(" ").append(GiftCertificateQueriesUtil.ADD_PAGINATION);
-        parametersValues.addAll(List.of(offset, GiftCertificateQueriesUtil.LIMIT));
-        parametersTypes.addAll(List.of(Types.INTEGER, Types.INTEGER));
+    public GiftCertificateQueryBuilder applyPagination(int pageNumber) {
+        if (pageNumber > 0) {
+            var offset = (pageNumber - 1) * DaoConstants.LIMIT;
+            queryBuilder.append(GiftCertificateQueryBuilderConstants.WHITESPACE)
+                    .append(GiftCertificateQueryBuilderConstants.PAGINATION);
+            parametersValuesList.addAll(List.of(offset, DaoConstants.LIMIT));
+            parametersTypesList.addAll(List.of(Types.INTEGER, Types.INTEGER));
+        }
+        return this;
+    }
+
+    @Override
+    public GiftCertificateQueryBuilderImpl build() {
+        query = queryBuilder.toString();
+        parametersValues = parametersValuesList.toArray();
+        parametersTypes = getParametersTypesArray();
+        return this;
+    }
+
+    @Override
+    public String getQuery() {
+        return query;
+    }
+
+    @Override
+    public Object[] getParametersValues() {
+        return parametersValues;
+    }
+
+    @Override
+    public int[] getParametersTypes() {
+        return parametersTypes;
+    }
+
+    private int[] getParametersTypesArray() {
+        var arrayParametersTypes = new int[parametersTypesList.size()];
+        for (int i = 0; i < parametersTypesList.size(); i++) {
+            arrayParametersTypes[i] = parametersTypesList.get(i);
+        }
+        return arrayParametersTypes;
     }
 }
