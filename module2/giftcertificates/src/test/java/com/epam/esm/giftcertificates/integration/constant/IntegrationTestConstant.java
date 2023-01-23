@@ -1,9 +1,9 @@
-package integration.com.epam.esm.giftcertificates.constant;
+package com.epam.esm.giftcertificates.integration.constant;
 
 public class IntegrationTestConstant {
 
     public static final String POSTGRES_IMAGE_VERSION = "postgres:14.1";
-    public static final String DATABASE_NAME = "entities";
+    public static final String DATABASE_NAME = "giftcertificates";
     public static final String USER_NAME = "postgres";
     public static final String USER_PASSWORD = "postgres";
     public static final String CLEAR_DATABASE_QUERY = "TRUNCATE gift_certificates.gift_certificate, gift_certificates.tag CASCADE";
@@ -17,12 +17,11 @@ public class IntegrationTestConstant {
     public static final String GET_LIST_OF_TAGS_URL = "/tags";
     public static final String GET_TAG_BY_ID_URL = "/tags/{id}";
     public static final String DELETE_TAG_URL = "/tags/{id}";
-    public static final String PATH_TO_TEST_JSON_OBJECTS = "json/testJsonObjects.json";
-    public static final String FIRST_GIFT_CERTIFICATE_JSON_NODE_NAME = "giftCertificateJson1";
-    public static final String SECOND_GIFT_CERTIFICATE_JSON_NODE_NAME = "giftCertificateJson2";
-    public static final String GIFT_CERTIFICATE_PARAMETERS_JSON_NODE_NAME = "giftCertificateParameters";
-    public static final String GIFT_CERTIFICATE_FOR_UPDATE_JSON_NODE_NAME = "giftCertificateForUpdateJson";
-    public static final String TAG_JSON_NODE_NAME = "tagJson";
+    public static final String PATH_TO_FIRST_TEST_GIFT_CERTIFICATE_JSON = "json/firstTestGiftCertificateJson.json";
+    public static final String PATH_TO_SECOND_TEST_GIFT_CERTIFICATE_JSON = "json/secondTestGiftCertificateJson.json";
+    public static final String PATH_TO_TEST_GIFT_CERTIFICATE_PARAMETERS_JSON = "json/testGiftCertificateParameters.json";
+    public static final String PATH_TO_TEST_GIFT_CERTIFICATE_FOR_UPDATE_JSON = "json/testGiftCertificateForUpdate.json";
+    public static final String PATH_TO_TAG_JSON = "json/testTagJson.json";
     public static final String GIFT_CERTIFICATE_FIELD_ID_KEY = "id";
     public static final String GIFT_CERTIFICATE_FIELD_NAME_KEY = "name";
     public static final String GIFT_CERTIFICATE_FIELD_DESCRIPTION_KEY = "description";

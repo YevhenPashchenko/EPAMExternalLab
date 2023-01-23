@@ -1,12 +1,14 @@
-package integration.com.epam.esm.giftcertificates.controller;
+package com.epam.esm.giftcertificates.integration.controller;
 
 import com.epam.esm.giftcertificates.config.SpringConfig;
+import com.epam.esm.giftcertificates.integration.config.IntegrationTestSpringConfig;
+import com.epam.esm.giftcertificates.integration.reader.IntegrationTestFileReader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import integration.com.epam.esm.giftcertificates.constant.IntegrationTestConstant;
-import integration.com.epam.esm.giftcertificates.container.IntegrationTestPostgreSqlContainer;
-import integration.com.epam.esm.giftcertificates.initializer.PostgreSqlDataSourceUrlInitializer;
+import com.epam.esm.giftcertificates.integration.constant.IntegrationTestConstant;
+import com.epam.esm.giftcertificates.integration.container.IntegrationTestPostgreSqlContainer;
+import com.epam.esm.giftcertificates.integration.initializer.PostgreSqlDataSourceUrlInitializer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,8 +23,6 @@ import org.testcontainers.containers.GenericContainer;
 
 import javax.sql.DataSource;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,13 +32,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringJUnitWebConfig(initializers = PostgreSqlDataSourceUrlInitializer.class,
-        classes = {IntegrationTestPostgreSqlContainer.class, SpringConfig.class})
+        classes = {IntegrationTestPostgreSqlContainer.class, SpringConfig.class, IntegrationTestSpringConfig.class})
 class GiftCertificateControllerIntegrationTest {
 
     public static GenericContainer<?> postgresSqlContainer = IntegrationTestPostgreSqlContainer.getInstance();
 
     @Autowired
     private WebApplicationContext webApplicationContext;
+    @Autowired
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    private IntegrationTestFileReader<JsonNode> integrationTestFileReader;
     private MockMvc mockMvc;
 
     @BeforeAll
@@ -55,7 +58,7 @@ class GiftCertificateControllerIntegrationTest {
     @Test
     void shouldReturn200_whenCreateNewGiftCertificate() throws Exception {
         //GIVEN
-        var giftCertificateJson = getJsonNode(IntegrationTestConstant.FIRST_GIFT_CERTIFICATE_JSON_NODE_NAME);
+        var giftCertificateJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_FIRST_TEST_GIFT_CERTIFICATE_JSON);
         var giftCertificateJsonAsString = new ObjectMapper().writeValueAsString(giftCertificateJson);
 
         //THEN
@@ -70,7 +73,7 @@ class GiftCertificateControllerIntegrationTest {
     void shouldReturnCreatedGiftCertificate_whenGetListOfGiftCertificatesForPage() throws Exception {
         //GIVEN
         var pageNumber = 1;
-        var giftCertificateJson = getJsonNode(IntegrationTestConstant.FIRST_GIFT_CERTIFICATE_JSON_NODE_NAME);
+        var giftCertificateJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_FIRST_TEST_GIFT_CERTIFICATE_JSON);
         var giftCertificateJsonAsString = new ObjectMapper().writeValueAsString(giftCertificateJson);
 
         //WHEN
@@ -102,7 +105,7 @@ class GiftCertificateControllerIntegrationTest {
     void shouldReturnCreatedGiftCertificate_whenGetGiftCertificateByIdThatExists() throws Exception {
         //GIVEN
         var pageNumber = 1;
-        var giftCertificateJson = getJsonNode(IntegrationTestConstant.FIRST_GIFT_CERTIFICATE_JSON_NODE_NAME);
+        var giftCertificateJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_FIRST_TEST_GIFT_CERTIFICATE_JSON);
         var giftCertificateJsonAsString = new ObjectMapper().writeValueAsString(giftCertificateJson);
 
         //WHEN
@@ -137,9 +140,9 @@ class GiftCertificateControllerIntegrationTest {
     @Test
     void shouldReturnOnlyFirstGiftCertificate_whenGetSortedGiftCertificatesByPartOfName() throws Exception {
         //GIVEN
-        var giftCertificateJson1 = getJsonNode(IntegrationTestConstant.FIRST_GIFT_CERTIFICATE_JSON_NODE_NAME);
-        var giftCertificateJson2 = getJsonNode(IntegrationTestConstant.SECOND_GIFT_CERTIFICATE_JSON_NODE_NAME);
-        var giftCertificateParametersJson = getJsonNode(IntegrationTestConstant.GIFT_CERTIFICATE_PARAMETERS_JSON_NODE_NAME);
+        var giftCertificateJson1 = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_FIRST_TEST_GIFT_CERTIFICATE_JSON);
+        var giftCertificateJson2 = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_SECOND_TEST_GIFT_CERTIFICATE_JSON);
+        var giftCertificateParametersJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_TEST_GIFT_CERTIFICATE_PARAMETERS_JSON);
         var giftCertificateJson1AsString = new ObjectMapper().writeValueAsString(giftCertificateJson1);
         var giftCertificateJson2AsString = new ObjectMapper().writeValueAsString(giftCertificateJson2);
         var giftCertificateParametersJsonAsString = new ObjectMapper().writeValueAsString(giftCertificateParametersJson);
@@ -175,8 +178,8 @@ class GiftCertificateControllerIntegrationTest {
     void shouldUpdateGiftCertificateFields_whenUpdateGiftCertificate() throws Exception {
         //GIVEN
         var pageNumber = 1;
-        var giftCertificateJson = getJsonNode(IntegrationTestConstant.FIRST_GIFT_CERTIFICATE_JSON_NODE_NAME);
-        var giftCertificateForUpdateJson = getJsonNode(IntegrationTestConstant.GIFT_CERTIFICATE_FOR_UPDATE_JSON_NODE_NAME);
+        var giftCertificateJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_FIRST_TEST_GIFT_CERTIFICATE_JSON);
+        var giftCertificateForUpdateJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_TEST_GIFT_CERTIFICATE_FOR_UPDATE_JSON);
         var giftCertificateJsonAsString = new ObjectMapper().writeValueAsString(giftCertificateJson);
 
         //WHEN
@@ -211,7 +214,7 @@ class GiftCertificateControllerIntegrationTest {
     void shouldReturn200_whenDeleteGiftCertificate() throws Exception {
         //GIVEN
         var pageNumber = 1;
-        var giftCertificateJson = getJsonNode(IntegrationTestConstant.FIRST_GIFT_CERTIFICATE_JSON_NODE_NAME);
+        var giftCertificateJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_FIRST_TEST_GIFT_CERTIFICATE_JSON);
         var giftCertificateJsonAsString = new ObjectMapper().writeValueAsString(giftCertificateJson);
 
         //WHEN
@@ -225,12 +228,6 @@ class GiftCertificateControllerIntegrationTest {
         try(Connection connection = webApplicationContext.getBean(DataSource.class).getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute(IntegrationTestConstant.CLEAR_DATABASE_QUERY);
-        }
-    }
-
-    private JsonNode getJsonNode(String fieldName) throws IOException {
-        try(InputStream inputStream = getClass().getClassLoader().getResourceAsStream(IntegrationTestConstant.PATH_TO_TEST_JSON_OBJECTS)) {
-            return new ObjectMapper().readValue(inputStream, JsonNode.class).get(fieldName);
         }
     }
 

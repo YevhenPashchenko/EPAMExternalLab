@@ -1,4 +1,4 @@
-package unit.com.epam.esm.giftcertificates.dao.impl;
+package com.epam.esm.giftcertificates.unit.dao.impl;
 
 import com.epam.esm.giftcertificates.constant.DaoConstants;
 import com.epam.esm.giftcertificates.dao.impl.GiftCertificateQueryBuilderImpl;

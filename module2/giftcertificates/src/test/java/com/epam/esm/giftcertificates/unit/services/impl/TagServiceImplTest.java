@@ -1,4 +1,4 @@
-package unit.com.epam.esm.giftcertificates.services.impl;
+package com.epam.esm.giftcertificates.unit.services.impl;
 
 import com.epam.esm.giftcertificates.dao.TagDao;
 import com.epam.esm.giftcertificates.entity.Tag;

@@ -1,11 +1,13 @@
-package integration.com.epam.esm.giftcertificates.controller;
+package com.epam.esm.giftcertificates.integration.controller;
 
 import com.epam.esm.giftcertificates.config.SpringConfig;
+import com.epam.esm.giftcertificates.integration.config.IntegrationTestSpringConfig;
+import com.epam.esm.giftcertificates.integration.container.IntegrationTestPostgreSqlContainer;
+import com.epam.esm.giftcertificates.integration.initializer.PostgreSqlDataSourceUrlInitializer;
+import com.epam.esm.giftcertificates.integration.reader.IntegrationTestFileReader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import integration.com.epam.esm.giftcertificates.constant.IntegrationTestConstant;
-import integration.com.epam.esm.giftcertificates.container.IntegrationTestPostgreSqlContainer;
-import integration.com.epam.esm.giftcertificates.initializer.PostgreSqlDataSourceUrlInitializer;
+import com.epam.esm.giftcertificates.integration.constant.IntegrationTestConstant;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,8 +21,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.GenericContainer;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,13 +29,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringJUnitWebConfig(initializers = PostgreSqlDataSourceUrlInitializer.class,
-        classes = {IntegrationTestPostgreSqlContainer.class, SpringConfig.class})
+        classes = {IntegrationTestPostgreSqlContainer.class, SpringConfig.class, IntegrationTestSpringConfig.class})
 public class TagControllerIntegrationTest {
 
     public static GenericContainer<?> postgresSqlContainer = IntegrationTestPostgreSqlContainer.getInstance();
 
     @Autowired
     private WebApplicationContext webApplicationContext;
+    @Autowired
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    private IntegrationTestFileReader<JsonNode> integrationTestFileReader;
     private MockMvc mockMvc;
 
     @BeforeAll
@@ -52,7 +55,7 @@ public class TagControllerIntegrationTest {
     @Test
     void shouldReturn200_whenCreateNewTag() throws Exception {
         //GIVEN
-        var tagJson = getJsonNode(IntegrationTestConstant.TAG_JSON_NODE_NAME);
+        var tagJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_TAG_JSON);
         var tagJsonAsString = new ObjectMapper().writeValueAsString(tagJson);
 
         //THEN
@@ -66,7 +69,7 @@ public class TagControllerIntegrationTest {
     @Test
     void shouldReturnCreatedTag_whenGetListOfTags() throws Exception {
         //GIVEN
-        var tagJson = getJsonNode(IntegrationTestConstant.TAG_JSON_NODE_NAME);
+        var tagJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_TAG_JSON);
         var tagJsonAsString = new ObjectMapper().writeValueAsString(tagJson);
 
         //WHEN
@@ -89,7 +92,7 @@ public class TagControllerIntegrationTest {
     @Test
     void shouldReturnCreatedTag_whenGetTagByIdThatExists() throws Exception {
         //GIVEN
-        var tagJson = getJsonNode(IntegrationTestConstant.TAG_JSON_NODE_NAME);
+        var tagJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_TAG_JSON);
         var tagJsonAsString = new ObjectMapper().writeValueAsString(tagJson);
 
         //WHEN
@@ -116,7 +119,7 @@ public class TagControllerIntegrationTest {
     @Test
     void shouldReturn200_whenDeleteTag() throws Exception {
         //GIVEN
-        var tagJson = getJsonNode(IntegrationTestConstant.TAG_JSON_NODE_NAME);
+        var tagJson = integrationTestFileReader.read(IntegrationTestConstant.PATH_TO_TAG_JSON);
         var tagJsonAsString = new ObjectMapper().writeValueAsString(tagJson);
 
         //WHEN
@@ -130,12 +133,6 @@ public class TagControllerIntegrationTest {
         try(Connection connection = webApplicationContext.getBean(DataSource.class).getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute(IntegrationTestConstant.CLEAR_DATABASE_QUERY);
-        }
-    }
-
-    private JsonNode getJsonNode(String fieldName) throws IOException {
-        try(InputStream inputStream = getClass().getClassLoader().getResourceAsStream(IntegrationTestConstant.PATH_TO_TEST_JSON_OBJECTS)) {
-            return new ObjectMapper().readValue(inputStream, JsonNode.class).get(fieldName);
         }
     }
 

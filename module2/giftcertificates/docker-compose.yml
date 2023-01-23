@@ -9,7 +9,7 @@ services:
     volumes:
       - D:/docker/storage/postgres:/var/lib/postgres
     environment:
-      POSTGRES_DB: entities
+      POSTGRES_DB: giftcertificates
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 

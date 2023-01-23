@@ -28,7 +28,7 @@ import java.util.Objects;
 @EnableWebMvc
 @EnableTransactionManagement
 @RequiredArgsConstructor
-public class SpringConfig implements WebMvcConfigurer {
+public class  SpringConfig implements WebMvcConfigurer {
 
     private final Environment environment;
 

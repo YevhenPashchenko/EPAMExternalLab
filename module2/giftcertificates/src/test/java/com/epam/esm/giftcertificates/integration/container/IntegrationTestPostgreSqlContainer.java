@@ -1,6 +1,6 @@
-package integration.com.epam.esm.giftcertificates.container;
+package com.epam.esm.giftcertificates.integration.container;
 
-import integration.com.epam.esm.giftcertificates.constant.IntegrationTestConstant;
+import com.epam.esm.giftcertificates.integration.constant.IntegrationTestConstant;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class IntegrationTestPostgreSqlContainer extends PostgreSQLContainer<IntegrationTestPostgreSqlContainer> {

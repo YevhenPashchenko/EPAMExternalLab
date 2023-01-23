@@ -1,6 +1,6 @@
-package integration.com.epam.esm.giftcertificates.initializer;
+package com.epam.esm.giftcertificates.integration.initializer;
 
-import integration.com.epam.esm.giftcertificates.container.IntegrationTestPostgreSqlContainer;
+import com.epam.esm.giftcertificates.integration.container.IntegrationTestPostgreSqlContainer;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.support.TestPropertySourceUtils;
