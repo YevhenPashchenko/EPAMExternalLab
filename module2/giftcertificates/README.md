@@ -1,0 +1,1 @@
+Before running the application run docker-compose.yml file in Docker.
