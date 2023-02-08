@@ -1,0 +1,49 @@
+{
+  "_embedded": {
+    "giftCertificateDtoList": [
+      {
+        "tags": [
+          {
+            "id": 1,
+            "name": "tagName1",
+            "_links": {
+              "self": {
+                "href": "http://localhost/tags/1"
+              }
+            }
+          },
+          {
+            "id": 2,
+            "name": "tagName2",
+            "_links": {
+              "self": {
+                "href": "http://localhost/tags/2"
+              }
+            }
+          }
+        ],
+        "id": 1,
+        "name": "name1",
+        "description": "description1",
+        "price": 250.5,
+        "duration": 15,
+        "_links": {
+          "self": {
+            "href": "http://localhost/gift-certificates/1"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "http://localhost/gift-certificates?page=0&size=2"
+    }
+  },
+  "page": {
+    "size": 2,
+    "totalElements": 1,
+    "totalPages": 1,
+    "number": 0
+  }
+}

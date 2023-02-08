@@ -1,0 +1,52 @@
+{
+  "giftCertificates": [
+    {
+      "tags": [
+        {
+          "id": 1,
+          "name": "tagName1",
+          "_links": {
+            "self": {
+              "href": "http://localhost/tags/1"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "name": "tagName2",
+          "_links": {
+            "self": {
+              "href": "http://localhost/tags/2"
+            }
+          }
+        }
+      ],
+      "id": 1,
+      "name": "name1",
+      "description": "description1",
+      "price": 250.5,
+      "duration": 15,
+      "_links": {
+        "self": {
+          "href": "http://localhost/gift-certificates/1"
+        }
+      }
+    }
+  ],
+  "id": 1,
+  "totalCost": 250.5,
+  "userDto": {
+    "id": 1,
+    "email": "user1@mail.com",
+    "_links": {
+      "self": {
+        "href": "http://localhost/users/1"
+      }
+    }
+  },
+  "_links": {
+    "self": {
+      "href": "http://localhost/users/orders/1"
+    }
+  }
+}

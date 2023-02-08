@@ -1,0 +1,26 @@
+{
+  "_embedded": {
+    "userDtoList": [
+      {
+        "id": 1,
+        "email": "user1@mail.com",
+        "_links": {
+          "self": {
+            "href": "http://localhost/users/1"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "http://localhost/users?page=0&size=2"
+    }
+  },
+  "page": {
+    "size": 2,
+    "totalElements": 1,
+    "totalPages": 1,
+    "number": 0
+  }
+}

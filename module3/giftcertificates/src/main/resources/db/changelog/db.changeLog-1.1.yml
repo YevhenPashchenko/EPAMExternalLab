@@ -1,0 +1,123 @@
+databaseChangeLog:
+  - changeSet:
+      id: create user, order, gift_certificates_order tables
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: user_id_pkey
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_update_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: email
+            constraintName: user_email_unique
+            tableName: user
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: user_id_seq
+        - createTable:
+            tableName: order
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: order_id_pkey
+                    nullable: false
+              - column:
+                  name: total_cost
+                  type: decimal
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_update_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: order_id_seq
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: order
+            constraintName: order_user_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: id
+            referencedTableName: user
+            validateForeignKey: true
+        - createTable:
+            tableName: gift_certificates_order
+            columns:
+              - column:
+                  name: gift_certificate_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: gift_certificate_id
+            baseTableName: gift_certificates_order
+            constraintName: gift_certificates_order_gift_certificate_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: id
+            referencedTableName: gift_certificate
+            validateForeignKey: true
+        - addForeignKeyConstraint:
+            baseColumnNames: order_id
+            baseTableName: gift_certificates_order
+            constraintName: gift_certificates_order_order_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: id
+            referencedTableName: order
+            validateForeignKey: true
