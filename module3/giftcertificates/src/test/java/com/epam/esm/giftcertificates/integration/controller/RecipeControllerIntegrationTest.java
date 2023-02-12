@@ -1,6 +1,6 @@
 package com.epam.esm.giftcertificates.integration.controller;
 
-import com.epam.esm.giftcertificates.GiftCertificateApplication;
+import com.epam.esm.giftcertificates.GiftCertificatesApplication;
 import com.epam.esm.giftcertificates.integration.constant.PathConstant;
 import com.epam.esm.giftcertificates.integration.constant.SqlConstant;
 import com.epam.esm.giftcertificates.integration.constant.UrlConstant;
@@ -21,33 +21,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(PostgreSqlTestContainer.class)
-@SpringBootTest(classes = GiftCertificateApplication.class)
+@SpringBootTest(classes = GiftCertificatesApplication.class)
 @AutoConfigureMockMvc
-class OrderControllerIntegrationTest {
+class RecipeControllerIntegrationTest {
 
   @Autowired private MockMvc mockMvc;
   @Autowired private JdbcTemplate jdbcTemplate;
   private final JsonFileReader jsonFileReader = new JsonFileReader();
   private final String PATTERN_BEFORE = "createDate";
-  private final String PATTERN_AFTER = "userDto";
+  private final String PATTERN_AFTER = "personDto";
 
   @BeforeEach
   public void execute() {
     jdbcTemplate.execute(SqlConstant.TRUNCATE_TABLES);
     jdbcTemplate.execute(SqlConstant.RESTART_GIFT_CERTIFICATE_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.RESTART_ORDER_ID_SEQUENCE);
+    jdbcTemplate.execute(SqlConstant.RESTART_RECIPE_ID_SEQUENCE);
     jdbcTemplate.execute(SqlConstant.RESTART_TAG_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.RESTART_USER_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.CREATE_USER);
+    jdbcTemplate.execute(SqlConstant.RESTART_PERSON_ID_SEQUENCE);
+    jdbcTemplate.execute(SqlConstant.CREATE_PERSON);
   }
 
   @Test
-  void shouldReturnOrderDtoEntityModel_whenCreateGiftCertificate() throws Exception {
+  void shouldReturnRecipeDtoEntityModel_whenCreateRecipe() throws Exception {
     // GIVEN
     var giftCertificateDtoJsonAsString =
         jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_GIFT_CERTIFICATE_DTO);
-    var orderDtoJsonAsString =
-        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_ORDER_DTO);
+    var recipeDtoJsonAsString =
+        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_RECIPE_DTO);
 
     // WHEN
     mockMvc
@@ -59,9 +59,9 @@ class OrderControllerIntegrationTest {
     var mvcResult =
         mockMvc
             .perform(
-                MockMvcRequestBuilders.post(UrlConstant.CREATE_ORDER_URL)
+                MockMvcRequestBuilders.post(UrlConstant.CREATE_RECIPE_URL)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(orderDtoJsonAsString))
+                    .content(recipeDtoJsonAsString))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -71,17 +71,17 @@ class OrderControllerIntegrationTest {
         result.substring(0, result.indexOf(PATTERN_BEFORE) - 1)
             + result.substring(result.indexOf(PATTERN_AFTER) - 1);
     assertEquals(
-        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_ORDER_DTO_ENTITY_MODEL),
+        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_RECIPE_DTO_ENTITY_MODEL),
         resultWithoutCreateDate);
   }
 
   @Test
-  void shouldReturnOrderDtoPagedModel_whenGetAllOrderDto() throws Exception {
+  void shouldReturnRecipeDtoPagedModel_whenGetAllRecipes() throws Exception {
     // GIVEN
     var giftCertificateDtoJsonAsString =
         jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_GIFT_CERTIFICATE_DTO);
-    var orderDtoJsonAsString =
-        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_ORDER_DTO);
+    var recipeDtoJsonAsString =
+        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_RECIPE_DTO);
 
     // WHEN
     mockMvc
@@ -92,13 +92,13 @@ class OrderControllerIntegrationTest {
         .andExpect(status().isOk());
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post(UrlConstant.CREATE_ORDER_URL)
+            MockMvcRequestBuilders.post(UrlConstant.CREATE_RECIPE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(orderDtoJsonAsString))
+                .content(recipeDtoJsonAsString))
         .andExpect(status().isOk());
     var mvcResult =
         mockMvc
-            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_ALL_ORDER_DTO_URL))
+            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_ALL_RECIPES_URL))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -108,17 +108,17 @@ class OrderControllerIntegrationTest {
         result.substring(0, result.indexOf(PATTERN_BEFORE) - 1)
             + result.substring(result.indexOf(PATTERN_AFTER) - 1);
     assertEquals(
-        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_ORDER_DTO_PAGED_MODEL),
+        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_RECIPE_DTO_PAGED_MODEL),
         resultWithoutCreateDate);
   }
 
   @Test
-  void shouldReturnOrderDtoEntityModel_whenGetOrderDtoByIdThatExists() throws Exception {
+  void shouldReturnRecipeDtoEntityModel_whenGetRecipeByIdThatExists() throws Exception {
     // GIVEN
     var giftCertificateDtoJsonAsString =
         jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_GIFT_CERTIFICATE_DTO);
-    var orderDtoJsonAsString =
-        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_ORDER_DTO);
+    var recipeDtoJsonAsString =
+        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_RECIPE_DTO);
 
     // WHEN
     mockMvc
@@ -129,13 +129,13 @@ class OrderControllerIntegrationTest {
         .andExpect(status().isOk());
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post(UrlConstant.CREATE_ORDER_URL)
+            MockMvcRequestBuilders.post(UrlConstant.CREATE_RECIPE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(orderDtoJsonAsString))
+                .content(recipeDtoJsonAsString))
         .andExpect(status().isOk());
     var mvcResult =
         mockMvc
-            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_ORDER_DTO_BY_ID))
+            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_RECIPE_BY_ID))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -145,20 +145,20 @@ class OrderControllerIntegrationTest {
             result.substring(0, result.indexOf(PATTERN_BEFORE) - 1)
                     + result.substring(result.indexOf(PATTERN_AFTER) - 1);
     assertEquals(
-            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_ORDER_DTO_ENTITY_MODEL),
+            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_RECIPE_DTO_ENTITY_MODEL),
             resultWithoutCreateDate);
   }
 
   @Test
-  void shouldReturnErrorDto_whenGetOrderDtoByIdThatNotExists() throws Exception {
+  void shouldReturnErrorDto_whenGetRecipeByIdThatNotExists() throws Exception {
     var mvcResult =
             mockMvc
-                    .perform(MockMvcRequestBuilders.get(UrlConstant.GET_ORDER_DTO_BY_ID))
+                    .perform(MockMvcRequestBuilders.get(UrlConstant.GET_RECIPE_BY_ID))
                     .andExpect(status().isNotFound())
                     .andReturn();
 
     assertEquals(
-            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_ORDER_ERROR_DTO),
+            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_RECIPE_ERROR_DTO),
             mvcResult.getResponse().getContentAsString());
   }
 }

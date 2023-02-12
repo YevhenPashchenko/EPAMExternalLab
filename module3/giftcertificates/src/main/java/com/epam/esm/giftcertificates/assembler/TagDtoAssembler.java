@@ -24,11 +24,11 @@ public class TagDtoAssembler extends RepresentationModelAssemblerSupport<Tag, Ta
   @Override
   public TagDto toModel(@NonNull Tag tag) {
     var tagDto = entityDtoMapper.tagToTagDto(tag);
-    addSelfLinkToTagDto(tagDto);
+    addSelfLinkToTag(tagDto);
     return tagDto;
   }
 
-  private void addSelfLinkToTagDto(TagDto tagDto) {
-    tagDto.add(linkTo(methodOn(TagController.class).getTagDtoById(tagDto.getId())).withSelfRel());
+  private void addSelfLinkToTag(TagDto tagDto) {
+    tagDto.add(linkTo(methodOn(TagController.class).getById(tagDto.getId())).withSelfRel());
   }
 }

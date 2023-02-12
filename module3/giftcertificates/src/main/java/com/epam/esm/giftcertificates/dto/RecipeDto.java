@@ -2,7 +2,6 @@ package com.epam.esm.giftcertificates.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -14,23 +13,22 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
-public class OrderDto extends RepresentationModel<OrderDto> {
+public class RecipeDto extends RepresentationModel<RecipeDto> {
 
   @NotEmpty private List<GiftCertificateDto> giftCertificates = new ArrayList<>();
 
   private Long id;
   private BigDecimal totalCost;
   private LocalDateTime createDate;
-  private UserDto userDto;
+  private PersonDto personDto;
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
-    OrderDto orderDto = (OrderDto) o;
-    return Objects.equals(id, orderDto.id);
+    RecipeDto recipeDto = (RecipeDto) o;
+    return Objects.equals(id, recipeDto.id);
   }
 
   @Override

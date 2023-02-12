@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,7 +47,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
   }
 
   @Override
-  public PagedModel<GiftCertificateDto> getAllGiftCertificateDto(int page, int size) {
+  public PagedModel<GiftCertificateDto> getAllGiftCertificates(int page, int size) {
     return pagedResourcesAssembler.toModel(
         giftCertificateRepository.findAll(PageRequest.of(page, size)), giftCertificateDtoAssembler);
   }
@@ -64,7 +65,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
   }
 
   @Override
-  public PagedModel<GiftCertificateDto> getAllGiftCertificateDtoByParameters(
+  public PagedModel<GiftCertificateDto> getAllGiftCertificatesByParameters(
       int page, int size, GiftCertificateSortingParametersDto giftCertificateSortingParametersDto) {
     var sort =
         checkIfSortingSet(giftCertificateSortingParametersDto.getSortBy()).orElse(Sort.unsorted());
@@ -79,6 +80,22 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificate.setTags(
                 tagService.getTagsByGiftCertificateId(giftCertificate.getId())));
     return pagedResourcesAssembler.toModel(listOfGiftCertificate, giftCertificateDtoAssembler);
+  }
+
+  private Optional<Sort> checkIfSortingSet(Map<String, String> sortBy) {
+    return sortBy.entrySet().stream()
+        .map(entry -> Sort.by(Sort.Direction.fromString(entry.getValue()), entry.getKey()))
+        .reduce(Sort::and);
+  }
+
+  @Override
+  public PagedModel<GiftCertificateDto> getAllGiftCertificatesByTags(
+      int page, int size, GiftCertificateDto giftCertificateDto) {
+    var tags = new HashSet<Long>();
+    giftCertificateDto.getTags().forEach(tagDto -> tags.add(tagDto.getId()));
+    return pagedResourcesAssembler.toModel(
+        giftCertificateRepository.findByTagsId(tags, PageRequest.of(page, size)),
+        giftCertificateDtoAssembler);
   }
 
   @Override
@@ -100,13 +117,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     var listOfTagDto = new ArrayList<TagDto>();
     giftCertificateDto
         .getTags()
-        .forEach(tagDto -> listOfTagDto.add(tagService.getTagDtoByName(tagDto.getName())));
+        .forEach(tagDto -> listOfTagDto.add(tagService.getTagByName(tagDto.getName())));
     giftCertificateDto.setTags(listOfTagDto);
-  }
-
-  private Optional<Sort> checkIfSortingSet(Map<String, String> sortBy) {
-    return sortBy.entrySet().stream()
-        .map(entry -> Sort.by(Sort.Direction.fromString(entry.getValue()), entry.getKey()))
-        .reduce(Sort::and);
   }
 }

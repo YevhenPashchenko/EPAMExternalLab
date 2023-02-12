@@ -9,19 +9,21 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "gift_certificate")
 @Getter
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class GiftCertificate extends AbstractEntity {
 
   @Id
@@ -51,6 +53,13 @@ public class GiftCertificate extends AbstractEntity {
       joinColumns = @JoinColumn(name = "gift_certificate_id"),
       inverseJoinColumns = @JoinColumn(name = "tag_id"))
   private Set<Tag> tags = new HashSet<>();
+
+  @ManyToMany
+  @JoinTable(
+      name = "gift_certificates_recipe",
+      joinColumns = @JoinColumn(name = "gift_certificate_id"),
+      inverseJoinColumns = @JoinColumn(name = "recipe_id"))
+  private List<Recipe> recipes = new ArrayList<>();
 
   public GiftCertificate(
       Long id,

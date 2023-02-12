@@ -4,7 +4,8 @@ import java.io.Serial;
 
 public class GiftCertificateNotFoundException extends RuntimeException {
 
-  @Serial private static final long serialVersionUID = 4741656609525560101L;
+  @Serial
+  private static final long serialVersionUID = 4741656609525560101L;
 
   public GiftCertificateNotFoundException(Long id) {
     super("Requested resource not found (id = " + id + ")");

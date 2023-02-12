@@ -1,6 +1,6 @@
 {
   "_embedded": {
-    "orderDtoList": [
+    "recipeDtoList": [
       {
         "giftCertificates": [
           {
@@ -38,18 +38,18 @@
         ],
         "id": 1,
         "totalCost": 250.5,
-        "userDto": {
+        "personDto": {
           "id": 1,
           "email": "user1@mail.com",
           "_links": {
             "self": {
-              "href": "http://localhost/users/1"
+              "href": "http://localhost/persons/1"
             }
           }
         },
         "_links": {
           "self": {
-            "href": "http://localhost/users/orders/1"
+            "href": "http://localhost/persons/recipes/1"
           }
         }
       }
@@ -57,7 +57,7 @@
   },
   "_links": {
     "self": {
-      "href": "http://localhost/users/1/orders?page=0&size=2"
+      "href": "http://localhost/persons/1/recipes?page=0&size=2"
     }
   },
   "page": {

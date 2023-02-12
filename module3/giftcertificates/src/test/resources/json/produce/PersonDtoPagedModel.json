@@ -1,12 +1,12 @@
 {
   "_embedded": {
-    "userDtoList": [
+    "personDtoList": [
       {
         "id": 1,
         "email": "user1@mail.com",
         "_links": {
           "self": {
-            "href": "http://localhost/users/1"
+            "href": "http://localhost/persons/1"
           }
         }
       }
@@ -14,7 +14,7 @@
   },
   "_links": {
     "self": {
-      "href": "http://localhost/users?page=0&size=2"
+      "href": "http://localhost/persons?page=0&size=2"
     }
   },
   "page": {

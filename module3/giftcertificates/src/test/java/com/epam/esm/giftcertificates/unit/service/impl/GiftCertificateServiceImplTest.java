@@ -14,10 +14,10 @@ import com.epam.esm.giftcertificates.service.impl.GiftCertificateServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,10 +63,9 @@ class GiftCertificateServiceImplTest {
   }
 
   @Test
-  void
-      getAllGiftCertificateDto_shouldCallsPagedResourcesAssemblerToModel_whenExecutedNormally() {
+  void getAllGiftCertificates_shouldCallsPagedResourcesAssemblerToModel_whenExecutedNormally() {
     // WHEN
-    giftCertificateService.getAllGiftCertificateDto(0, 2);
+    giftCertificateService.getAllGiftCertificates(0, 2);
 
     // THEN
     then(pagedResourcesAssembler)
@@ -130,21 +129,37 @@ class GiftCertificateServiceImplTest {
 
   @Test
   void
-      getAllGiftCertificateDtoByParameters_shouldCallsPagedResourcesAssemblerToModel_whenExecutedNormally() {
+      getAllGiftCertificatesByParameters_shouldCallsPagedResourcesAssemblerToModel_whenExecutedNormally() {
     // GIVEN
-    given(
-            giftCertificateRepository.findByParameters(
-                null, null, null, PageRequest.of(0, 2, Sort.unsorted())))
+    given(giftCertificateRepository.findByParameters(null, null, null, PageRequest.of(0, 2)))
         .willReturn(Page.empty());
 
     // WHEN
-    giftCertificateService.getAllGiftCertificateDtoByParameters(
+    giftCertificateService.getAllGiftCertificatesByParameters(
         0, 2, new GiftCertificateSortingParametersDto());
 
     // THEN
     then(pagedResourcesAssembler)
         .should(atLeastOnce())
         .toModel(Page.empty(), giftCertificateDtoAssembler);
+  }
+
+  @Test
+  void
+      getAllGiftCertificatesByTags_shouldCallsPagedResourcesAssemblerToModel_whenExecutedNormally() {
+    // GIVEN
+    given(
+            giftCertificateRepository.findByTagsId(
+                new HashSet<>(), PageRequest.of(0, 2)))
+        .willReturn(Page.empty());
+
+    // WHEN
+    giftCertificateService.getAllGiftCertificatesByTags(0, 2, new GiftCertificateDto());
+
+    // THEN
+    then(pagedResourcesAssembler)
+            .should(atLeastOnce())
+            .toModel(Page.empty(), giftCertificateDtoAssembler);
   }
 
   @Test

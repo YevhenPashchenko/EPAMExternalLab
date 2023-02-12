@@ -1,8 +1,7 @@
 package com.epam.esm.giftcertificates.controller;
 
-import com.epam.esm.giftcertificates.dto.UserDto;
-import com.epam.esm.giftcertificates.service.UserService;
-import jakarta.validation.Valid;
+import com.epam.esm.giftcertificates.dto.PersonDto;
+import com.epam.esm.giftcertificates.service.PersonService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
@@ -16,25 +15,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/persons")
 @RequiredArgsConstructor
-@Valid
-public class UserController {
+public class PersonController {
 
-  private final UserService userService;
+  private final PersonService personService;
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public PagedModel<UserDto> getAllUserDto(
+  public PagedModel<PersonDto> getAll(
       @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be not less 0")
           int page,
       @RequestParam(defaultValue = "20")
           @Range(min = 1, max = 100, message = "size must be between 1 and 100")
           int size) {
-    return userService.getAllUserDto(page, size);
+    return personService.getAllPersons(page, size);
   }
 
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public EntityModel<UserDto> getUserDtoById(@PathVariable("id") Long id) {
-    return userService.getUserDtoById(id);
+  public EntityModel<PersonDto> getById(@PathVariable("id") Long id) {
+    return personService.getPersonDtoById(id);
   }
 }

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 @JsonNaming(PropertyNamingStrategies.KebabCaseStrategy.class)
 public class GiftCertificateSortingParametersDto {
 

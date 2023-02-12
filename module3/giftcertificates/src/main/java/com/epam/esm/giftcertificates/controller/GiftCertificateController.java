@@ -11,7 +11,6 @@ import org.hibernate.validator.constraints.Range;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/gift-certificates")
 @RequiredArgsConstructor
-@Validated
 public class GiftCertificateController {
 
   private final GiftCertificateService giftCertificateService;
@@ -33,23 +31,23 @@ public class GiftCertificateController {
   @PostMapping(
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public EntityModel<GiftCertificateDto> createGiftCertificate(
+  public EntityModel<GiftCertificateDto> create(
       @Valid @RequestBody GiftCertificateDto giftCertificateDTO) {
     return giftCertificateService.createGiftCertificate(giftCertificateDTO);
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public PagedModel<GiftCertificateDto> getAllGiftCertificates(
+  public PagedModel<GiftCertificateDto> getAll(
       @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be not less 0")
           int page,
       @RequestParam(defaultValue = "20")
           @Range(min = 1, max = 100, message = "size must be between 1 and 100")
           int size) {
-    return giftCertificateService.getAllGiftCertificateDto(page, size);
+    return giftCertificateService.getAllGiftCertificates(page, size);
   }
 
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public EntityModel<GiftCertificateDto> getGiftCertificateById(@PathVariable("id") long id) {
+  public EntityModel<GiftCertificateDto> getById(@PathVariable("id") long id) {
     return giftCertificateService.getGiftCertificateDtoById(id);
   }
 
@@ -57,27 +55,40 @@ public class GiftCertificateController {
       value = "/sort",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public PagedModel<GiftCertificateDto> getAllGiftCertificatesByParameters(
+  public PagedModel<GiftCertificateDto> getAllByParameters(
       @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be not less 0")
           int page,
       @RequestParam(defaultValue = "20")
           @Range(min = 1, max = 100, message = "size must be between 1 and 100")
           int size,
       @RequestBody GiftCertificateSortingParametersDto giftCertificateSortingParametersDto) {
-    return giftCertificateService.getAllGiftCertificateDtoByParameters(
+    return giftCertificateService.getAllGiftCertificatesByParameters(
         page, size, giftCertificateSortingParametersDto);
+  }
+
+  @GetMapping(
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public PagedModel<GiftCertificateDto> getAllByTags(
+      @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be not less 0")
+          int page,
+      @RequestParam(defaultValue = "20")
+          @Range(min = 1, max = 100, message = "size must be between 1 and 100")
+          int size,
+      @RequestBody GiftCertificateDto giftCertificateDto) {
+    return giftCertificateService.getAllGiftCertificatesByTags(page, size, giftCertificateDto);
   }
 
   @PatchMapping(
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public EntityModel<GiftCertificateDto> updateGiftCertificate(
+  public EntityModel<GiftCertificateDto> update(
       @RequestBody GiftCertificateDtoForUpdate giftCertificateDtoForUpdate) {
     return giftCertificateService.updateGiftCertificate(giftCertificateDtoForUpdate);
   }
 
   @DeleteMapping(value = "/{id}")
-  public void deleteGiftCertificate(@PathVariable("id") long id) {
+  public void delete(@PathVariable("id") long id) {
     giftCertificateService.deleteGiftCertificate(id);
   }
 }

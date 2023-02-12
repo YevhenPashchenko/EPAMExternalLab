@@ -1,18 +1,18 @@
 package com.epam.esm.giftcertificates.repository;
 
-import com.epam.esm.giftcertificates.entity.Order;
+import com.epam.esm.giftcertificates.entity.Recipe;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * API provides methods for basic CR operations with {@link Order} objects.
+ * API provides methods for basic CR operations with {@link Recipe} objects.
  *
  * @author Yevhen Pashchenko
  */
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
-  Page<Order> getAllByUserId(Long id, Pageable pageable);
+  Page<Recipe> getAllByPersonId(Long id, Pageable pageable);
 }

@@ -4,6 +4,7 @@ import com.epam.esm.giftcertificates.dto.GiftCertificateDto;
 import com.epam.esm.giftcertificates.dto.GiftCertificateDtoForUpdate;
 import com.epam.esm.giftcertificates.dto.GiftCertificateSortingParametersDto;
 import com.epam.esm.giftcertificates.entity.GiftCertificate;
+import com.epam.esm.giftcertificates.entity.Tag;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 
@@ -30,7 +31,7 @@ public interface GiftCertificateService {
    * @param size {@code size}.
    * @return list of {@link GiftCertificateDto} objects.
    */
-  PagedModel<GiftCertificateDto> getAllGiftCertificateDto(int page, int size);
+  PagedModel<GiftCertificateDto> getAllGiftCertificates(int page, int size);
 
   /**
    * Returns a {@link GiftCertificateDto} object by given {@link GiftCertificate} {@code id}.
@@ -58,8 +59,20 @@ public interface GiftCertificateService {
    * @param giftCertificateSortingParametersDto {@link GiftCertificateSortingParametersDto} object.
    * @return list of {@link GiftCertificateDto} objects.
    */
-  PagedModel<GiftCertificateDto> getAllGiftCertificateDtoByParameters(
+  PagedModel<GiftCertificateDto> getAllGiftCertificatesByParameters(
       int page, int size, GiftCertificateSortingParametersDto giftCertificateSortingParametersDto);
+
+  /**
+   * Returns a list of {@link GiftCertificateDto} objects selected by {@link Tag} objects, given in
+   * {@link GiftCertificateDto} object from given {@code page} and {@code size}.
+   *
+   * @param page {@code page}.
+   * @param size {@code size}.
+   * @param giftCertificateDto {@link GiftCertificateDto} object.
+   * @return list of {@link GiftCertificateDto} objects.
+   */
+  PagedModel<GiftCertificateDto> getAllGiftCertificatesByTags(
+      int page, int size, GiftCertificateDto giftCertificateDto);
 
   /**
    * Changes values of fields {@link GiftCertificate} object.

@@ -2,7 +2,6 @@ package com.epam.esm.giftcertificates.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -10,7 +9,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 public class TagDto extends RepresentationModel<TagDto> {
 
   private Long id;

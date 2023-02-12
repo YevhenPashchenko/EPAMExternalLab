@@ -11,7 +11,8 @@ import org.springframework.data.jpa.repository.Query;
  *
  * @author Yevhen Pashchenko
  */
-public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
+public interface GiftCertificateRepository
+    extends JpaRepository<GiftCertificate, Long>, GiftCertificateRepositoryCustom {
 
   @Query(
       "SELECT DISTINCT new com.epam.esm.giftcertificates.entity.GiftCertificate(g.id, g.name, g.description, g.price, "

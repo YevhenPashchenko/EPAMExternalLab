@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
 @SpringBootApplication
-public class GiftCertificateApplication {
+public class GiftCertificatesApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(GiftCertificateApplication.class, args);
+    SpringApplication.run(GiftCertificatesApplication.class, args);
   }
 }

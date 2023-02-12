@@ -1,6 +1,6 @@
 package com.epam.esm.giftcertificates.integration.controller;
 
-import com.epam.esm.giftcertificates.GiftCertificateApplication;
+import com.epam.esm.giftcertificates.GiftCertificatesApplication;
 import com.epam.esm.giftcertificates.integration.constant.PathConstant;
 import com.epam.esm.giftcertificates.integration.constant.SqlConstant;
 import com.epam.esm.giftcertificates.integration.constant.UrlConstant;
@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(PostgreSqlTestContainer.class)
-@SpringBootTest(classes = GiftCertificateApplication.class)
+@SpringBootTest(classes = GiftCertificatesApplication.class)
 @AutoConfigureMockMvc
-class UserControllerIntegrationTest {
+class PersonControllerIntegrationTest {
 
   @Autowired private MockMvc mockMvc;
   @Autowired private JdbcTemplate jdbcTemplate;
@@ -32,54 +32,54 @@ class UserControllerIntegrationTest {
   public void execute() {
     jdbcTemplate.execute(SqlConstant.TRUNCATE_TABLES);
     jdbcTemplate.execute(SqlConstant.RESTART_GIFT_CERTIFICATE_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.RESTART_ORDER_ID_SEQUENCE);
+    jdbcTemplate.execute(SqlConstant.RESTART_RECIPE_ID_SEQUENCE);
     jdbcTemplate.execute(SqlConstant.RESTART_TAG_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.RESTART_USER_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.CREATE_USER);
+    jdbcTemplate.execute(SqlConstant.RESTART_PERSON_ID_SEQUENCE);
+    jdbcTemplate.execute(SqlConstant.CREATE_PERSON);
   }
 
   @Test
-  void shouldReturnUserDtoPagedModel_whenGetAllUserDto() throws Exception {
+  void shouldReturnPersonDtoPagedModel_whenGetAllPersons() throws Exception {
     // WHEN
     var mvcResult =
         mockMvc
-            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_ALL_USER_DTO_URL))
+            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_ALL_PERSONS_URL))
             .andExpect(status().isOk())
             .andReturn();
 
     // THEN
     assertEquals(
-        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_USER_DTO_PAGED_MODEL),
+        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_PERSON_DTO_PAGED_MODEL),
         mvcResult.getResponse().getContentAsString());
   }
 
   @Test
-  void shouldReturnUserDtoEntityModel_whenGetUserDtoByIdThatExists() throws Exception {
+  void shouldReturnPersonDtoEntityModel_whenGetPersonByIdThatExists() throws Exception {
     // WHEN
     var mvcResult =
             mockMvc
-                    .perform(MockMvcRequestBuilders.get(UrlConstant.GET_USER_DTO_BY_ID_URL))
+                    .perform(MockMvcRequestBuilders.get(UrlConstant.GET_PERSON_BY_ID_URL))
                     .andExpect(status().isOk())
                     .andReturn();
 
     // THEN
     assertEquals(
-            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_USER_DTO_ENTITY_MODEL),
+            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_PERSON_DTO_ENTITY_MODEL),
             mvcResult.getResponse().getContentAsString());
   }
 
   @Test
-  void shouldReturnErrorDto_whenGetUserDtoByIdThatNotExists() throws Exception {
+  void shouldReturnErrorDto_whenGetPersonByIdThatNotExists() throws Exception {
     // WHEN
     var mvcResult =
             mockMvc
-                    .perform(MockMvcRequestBuilders.get(UrlConstant.GET_USER_DTO_BY_ID_NOT_EXIST_URL))
+                    .perform(MockMvcRequestBuilders.get(UrlConstant.GET_PERSON_BY_ID_NOT_EXIST_URL))
                     .andExpect(status().isNotFound())
                     .andReturn();
 
     // THEN
     assertEquals(
-            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_USER_ERROR_DTO),
+            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_PERSON_ERROR_DTO),
             mvcResult.getResponse().getContentAsString());
   }
 }

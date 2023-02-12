@@ -1,5 +1,6 @@
 package com.epam.esm.giftcertificates.unit.service.impl;
 
+import com.epam.esm.giftcertificates.aggregation.CountTagsId;
 import com.epam.esm.giftcertificates.assembler.TagDtoAssembler;
 import com.epam.esm.giftcertificates.repository.TagRepository;
 import com.epam.esm.giftcertificates.dto.TagDto;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -51,9 +53,9 @@ class TagServiceImplTest {
   }
 
   @Test
-  void getAllTagDto_shouldCallsPagedResourcesAssemblerToModel_whenExecutedNormally() {
+  void getAllTags_shouldCallsPagedResourcesAssemblerToModel_whenExecutedNormally() {
     // WHEN
-    tagService.getAllTagDto(0, 2);
+    tagService.getAllTags(0, 2);
 
     // THEN
     then(pagedResourcesAssembler)
@@ -62,46 +64,75 @@ class TagServiceImplTest {
   }
 
   @Test
-  void getTagDtoById_shouldReturnTagDtoEntityModel_whenTagWithThisIdExist() {
+  void getTagById_shouldReturnTagDtoEntityModel_whenTagWithThisIdExist() {
     // GIVEN
     given(tagRepository.findById(anyLong())).willReturn(Optional.of(new Tag()));
     given(tagDtoAssembler.toModel(any(Tag.class))).willReturn(new TagDto());
 
     // WHEN
-    var result = tagService.getTagDtoById(0L);
+    var result = tagService.getTagById(0L);
 
     // THEN
     assertEquals(EntityModel.of(new TagDto()), result);
   }
 
   @Test
-  void getTagDtoById_shouldThrowTagNotFoundException_whenTagWithThisIdNotExist() {
+  void getTagById_shouldThrowTagNotFoundException_whenTagWithThisIdNotExist() {
     // GIVEN
     given(tagRepository.findById(anyLong())).willReturn(Optional.empty());
 
     // THEN
-    assertThrows(TagNotFoundException.class, () -> tagService.getTagDtoById(0L));
+    assertThrows(TagNotFoundException.class, () -> tagService.getTagById(0L));
   }
 
   @Test
-  void getTagDtoByName_shouldNotCallsTagRepositorySave_whenTagWithThisNameExist() {
+  void
+      getMostWidelyUsedTagsFromPersonMaxCostRecipe_shouldCallsPagedResourcesAssemblerToModel_whenExecutedNormally() {
+    // GIVEN
+    var listCountTagsId = new ArrayList<CountTagsId>();
+    var countTagsId = new CountTagsId() {
+      @Override
+      public Long getTagCount() {
+        return 1L;
+      }
+
+      @Override
+      public Long getTagId() {
+        return 1L;
+      }
+    };
+    listCountTagsId.add(countTagsId);
+    given(tagRepository.findCountTagsInPersonMaxCostRecipe(anyLong())).willReturn(listCountTagsId);
+
+    // WHEN
+    tagService.getMostWidelyUsedTagsFromPersonMaxCostRecipe(0, 2, 0L);
+
+    // THEN
+    then(pagedResourcesAssembler)
+        .should(atLeastOnce())
+        .toModel(
+            tagRepository.findTagByIdIn(new ArrayList<>(), PageRequest.of(0, 2)), tagDtoAssembler);
+  }
+
+  @Test
+  void getTagByName_shouldNotCallsTagRepositorySave_whenTagWithThisNameExist() {
     // GIVEN
     given(tagRepository.findTagByName(anyString())).willReturn(Optional.of(new Tag()));
 
     // WHEN
-    tagService.getTagDtoByName("tagName");
+    tagService.getTagByName("tagName");
 
     // THEN
     then(tagRepository).should(times(0)).save(new Tag());
   }
 
   @Test
-  void getTagDtoByName_shouldCallsTagRepositorySave_whenTagWithThisNameNotExist() {
+  void getTagByName_shouldCallsTagRepositorySave_whenTagWithThisNameNotExist() {
     // GIVEN
     given(tagRepository.findTagByName(anyString())).willReturn(Optional.empty());
 
     // WHEN
-    tagService.getTagDtoByName("tagName");
+    tagService.getTagByName("tagName");
 
     // THEN
     then(tagRepository).should(atLeastOnce()).save(new Tag());

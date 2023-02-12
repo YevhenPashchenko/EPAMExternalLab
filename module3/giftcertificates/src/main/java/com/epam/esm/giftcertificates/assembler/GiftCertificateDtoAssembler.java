@@ -27,20 +27,18 @@ public class GiftCertificateDtoAssembler
   @Override
   public GiftCertificateDto toModel(@NonNull GiftCertificate giftCertificate) {
     var giftCertificateDto = entityDtoMapper.giftCertificateToGiftCertificateDto(giftCertificate);
-    giftCertificateDto.getTags().forEach(this::addSelfLinkToTagDto);
-    addSelfLinkToGiftCertificateDto(giftCertificateDto);
+    giftCertificateDto.getTags().forEach(this::addSelfLinkToTag);
+    addSelfLinkToGiftCertificate(giftCertificateDto);
     return giftCertificateDto;
   }
 
-  private void addSelfLinkToTagDto(TagDto tagDto) {
-    tagDto.add(linkTo(methodOn(TagController.class).getTagDtoById(tagDto.getId())).withSelfRel());
+  private void addSelfLinkToTag(TagDto tagDto) {
+    tagDto.add(linkTo(methodOn(TagController.class).getById(tagDto.getId())).withSelfRel());
   }
 
-  private void addSelfLinkToGiftCertificateDto(GiftCertificateDto giftCertificateDto) {
+  private void addSelfLinkToGiftCertificate(GiftCertificateDto giftCertificateDto) {
     giftCertificateDto.add(
-        linkTo(
-                methodOn(GiftCertificateController.class)
-                    .getGiftCertificateById(giftCertificateDto.getId()))
+        linkTo(methodOn(GiftCertificateController.class).getById(giftCertificateDto.getId()))
             .withSelfRel());
   }
 }

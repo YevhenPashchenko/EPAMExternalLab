@@ -28,27 +28,38 @@ public class TagController {
   @PostMapping(
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public EntityModel<TagDto> createTag(@Valid @RequestBody TagDto tagDTO) {
+  public EntityModel<TagDto> create(@Valid @RequestBody TagDto tagDTO) {
     return tagService.createTag(tagDTO);
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public PagedModel<TagDto> getAllTagDto(
+  public PagedModel<TagDto> getAll(
       @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be not less 0")
           int page,
       @RequestParam(defaultValue = "20")
           @Range(min = 1, max = 100, message = "size must be between 1 and 100")
           int size) {
-    return tagService.getAllTagDto(page, size);
+    return tagService.getAllTags(page, size);
   }
 
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public EntityModel<TagDto> getTagDtoById(@PathVariable("id") long id) {
-    return tagService.getTagDtoById(id);
+  public EntityModel<TagDto> getById(@PathVariable("id") long id) {
+    return tagService.getTagById(id);
+  }
+
+  @GetMapping(value = "/persons/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public PagedModel<TagDto> getMostWidelyUsedTagsFromPersonMaxCostRecipe(
+      @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be not less 0")
+          int page,
+      @RequestParam(defaultValue = "20")
+          @Range(min = 1, max = 100, message = "size must be between 1 and 100")
+          int size,
+      @PathVariable("id") Long id) {
+    return tagService.getMostWidelyUsedTagsFromPersonMaxCostRecipe(page, size, id);
   }
 
   @DeleteMapping(value = "/{id}")
-  public void deleteTag(@PathVariable("id") long id) {
+  public void delete(@PathVariable("id") long id) {
     tagService.deleteTag(id);
   }
 }

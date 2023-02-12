@@ -1,6 +1,6 @@
 package com.epam.esm.giftcertificates.integration.controller;
 
-import com.epam.esm.giftcertificates.GiftCertificateApplication;
+import com.epam.esm.giftcertificates.GiftCertificatesApplication;
 import com.epam.esm.giftcertificates.integration.constant.PathConstant;
 import com.epam.esm.giftcertificates.integration.constant.SqlConstant;
 import com.epam.esm.giftcertificates.integration.constant.UrlConstant;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(PostgreSqlTestContainer.class)
-@SpringBootTest(classes = GiftCertificateApplication.class)
+@SpringBootTest(classes = GiftCertificatesApplication.class)
 @AutoConfigureMockMvc
 class GiftCertificateControllerIntegrationTest {
 
@@ -33,9 +33,9 @@ class GiftCertificateControllerIntegrationTest {
   public void execute() {
     jdbcTemplate.execute(SqlConstant.TRUNCATE_TABLES);
     jdbcTemplate.execute(SqlConstant.RESTART_GIFT_CERTIFICATE_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.RESTART_ORDER_ID_SEQUENCE);
+    jdbcTemplate.execute(SqlConstant.RESTART_RECIPE_ID_SEQUENCE);
     jdbcTemplate.execute(SqlConstant.RESTART_TAG_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.RESTART_USER_ID_SEQUENCE);
+    jdbcTemplate.execute(SqlConstant.RESTART_PERSON_ID_SEQUENCE);
   }
 
   @Test
@@ -62,8 +62,7 @@ class GiftCertificateControllerIntegrationTest {
   }
 
   @Test
-  void shouldReturnGiftCertificateDtoPagedModel_whenGetAllGiftCertificateDto()
-      throws Exception {
+  void shouldReturnGiftCertificateDtoPagedModel_whenGetAllGiftCertificates() throws Exception {
     // GIVEN
     var giftCertificateDtoJsonAsString =
         jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_GIFT_CERTIFICATE_DTO);
@@ -77,8 +76,7 @@ class GiftCertificateControllerIntegrationTest {
         .andExpect(status().isOk());
     var mvcResult =
         mockMvc
-            .perform(
-                MockMvcRequestBuilders.get(UrlConstant.GET_ALL_GIFT_CERTIFICATE_DTO_URL))
+            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_ALL_GIFT_CERTIFICATES))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -90,7 +88,7 @@ class GiftCertificateControllerIntegrationTest {
   }
 
   @Test
-  void shouldReturnGiftCertificateDtoEntityModel_whenGetGiftCertificateDtoByIdThatExists()
+  void shouldReturnGiftCertificateDtoEntityModel_whenGetGiftCertificateByIdThatExists()
       throws Exception {
     // GIVEN
     var giftCertificateDtoJsonAsString =
@@ -105,7 +103,7 @@ class GiftCertificateControllerIntegrationTest {
         .andExpect(status().isOk());
     var mvcResult =
         mockMvc
-            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_GIFT_CERTIFICATE_DTO_BY_ID_URL))
+            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_GIFT_CERTIFICATE_BY_ID_URL))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -117,11 +115,11 @@ class GiftCertificateControllerIntegrationTest {
   }
 
   @Test
-  void shouldReturnErrorDto_whenGetGiftCertificateDtoByIdThatNotExists() throws Exception {
+  void shouldReturnErrorDto_whenGetGiftCertificateByIdThatNotExists() throws Exception {
     // WHEN
     var mvcResult =
         mockMvc
-            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_GIFT_CERTIFICATE_DTO_BY_ID_URL))
+            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_GIFT_CERTIFICATE_BY_ID_URL))
             .andExpect(status().isNotFound())
             .andReturn();
 
@@ -132,7 +130,7 @@ class GiftCertificateControllerIntegrationTest {
   }
 
   @Test
-  void shouldReturnGiftCertificateDtoPagedModel_whenGetAllGiftCertificateDtoByParameters()
+  void shouldReturnGiftCertificateDtoPagedModel_whenGetAllGiftCertificatesByParameters()
       throws Exception {
     // GIVEN
     var giftCertificateDtoJsonAsString =
@@ -152,7 +150,7 @@ class GiftCertificateControllerIntegrationTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders.get(
-                        UrlConstant.GET_ALL_GIFT_CERTIFICATE_DTO_BY_PARAMETERS_URL)
+                        UrlConstant.GET_ALL_GIFT_CERTIFICATES_BY_PARAMETERS_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(giftCertificateSortingParametersDtoJsonAsString))
             .andExpect(status().isOk())
@@ -163,6 +161,42 @@ class GiftCertificateControllerIntegrationTest {
         jsonFileReader.readJsonAsString(
             PathConstant.PATH_TO_PRODUCES_GIFT_CERTIFICATE_DTO_BY_PARAMETERS_PAGED_MODEL),
         mvcResult.getResponse().getContentAsString());
+  }
+
+  @Test
+  void shouldReturnGiftCertificateDtoPagedModel_whenGetAllGiftCertificatesByTags()
+      throws Exception {
+    // GIVEN
+    var giftCertificateDtoJsonAsString =
+        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_GIFT_CERTIFICATE_DTO);
+
+    // WHEN
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.post(UrlConstant.CREATE_GIFT_CERTIFICATE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(giftCertificateDtoJsonAsString))
+        .andExpect(status().isOk());
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.post(UrlConstant.CREATE_GIFT_CERTIFICATE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(giftCertificateDtoJsonAsString))
+        .andExpect(status().isOk());
+    var mvcResult =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.get(UrlConstant.GET_ALL_GIFT_CERTIFICATES)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(giftCertificateDtoJsonAsString))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // THEN
+    assertEquals(
+            jsonFileReader.readJsonAsString(
+                    PathConstant.PATH_TO_PRODUCES_GIFT_CERTIFICATE_DTO_BY_TAGS_PAGED_MODEL),
+            mvcResult.getResponse().getContentAsString());
   }
 
   @Test
@@ -225,15 +259,15 @@ class GiftCertificateControllerIntegrationTest {
   void shouldReturn200_whenDeleteGiftCertificateThatExists() throws Exception {
     // GIVEN
     var giftCertificateDtoJsonAsString =
-            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_GIFT_CERTIFICATE_DTO);
+        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_CONSUMES_GIFT_CERTIFICATE_DTO);
 
     // WHEN
     mockMvc
-            .perform(
-                    MockMvcRequestBuilders.post(UrlConstant.CREATE_GIFT_CERTIFICATE_URL)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(giftCertificateDtoJsonAsString))
-            .andExpect(status().isOk());
+        .perform(
+            MockMvcRequestBuilders.post(UrlConstant.CREATE_GIFT_CERTIFICATE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(giftCertificateDtoJsonAsString))
+        .andExpect(status().isOk());
 
     // THEN
     mockMvc
@@ -245,7 +279,7 @@ class GiftCertificateControllerIntegrationTest {
   void shouldReturn400_whenDeleteGiftCertificateThatNotExists() throws Exception {
     // THEN
     mockMvc
-            .perform(MockMvcRequestBuilders.delete(UrlConstant.DELETE_GIFT_CERTIFICATE_URL))
-            .andExpect(status().isBadRequest());
+        .perform(MockMvcRequestBuilders.delete(UrlConstant.DELETE_GIFT_CERTIFICATE_URL))
+        .andExpect(status().isBadRequest());
   }
 }

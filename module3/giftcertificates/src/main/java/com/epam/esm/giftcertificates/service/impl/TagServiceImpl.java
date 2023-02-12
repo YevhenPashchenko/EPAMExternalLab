@@ -1,5 +1,6 @@
 package com.epam.esm.giftcertificates.service.impl;
 
+import com.epam.esm.giftcertificates.aggregation.CountTagsId;
 import com.epam.esm.giftcertificates.assembler.TagDtoAssembler;
 import com.epam.esm.giftcertificates.repository.TagRepository;
 import com.epam.esm.giftcertificates.dto.TagDto;
@@ -14,6 +15,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -28,25 +31,57 @@ public class TagServiceImpl implements TagService {
   @Override
   public EntityModel<TagDto> createTag(TagDto tagDto) {
     var tag = entityDtoMapper.tagDtoToTag(tagDto);
-    tagRepository.save(tag);
+    saveTag(tag);
     return EntityModel.of(tagDtoAssembler.toModel(tag));
   }
 
+  private Tag saveTag(Tag tag) {
+    return tagRepository.save(tag);
+  }
+
   @Override
-  public PagedModel<TagDto> getAllTagDto(int page, int size) {
+  public PagedModel<TagDto> getAllTags(int page, int size) {
     return pagedResourcesAssembler.toModel(
         tagRepository.findAll(PageRequest.of(page, size)), tagDtoAssembler);
   }
 
   @Override
-  public EntityModel<TagDto> getTagDtoById(long id) {
+  public EntityModel<TagDto> getTagById(long id) {
     return EntityModel.of(
         tagDtoAssembler.toModel(
             tagRepository.findById(id).orElseThrow(() -> new TagNotFoundException(id))));
   }
 
   @Override
-  public TagDto getTagDtoByName(String name) {
+  public PagedModel<TagDto> getMostWidelyUsedTagsFromPersonMaxCostRecipe(
+      int page, int size, Long id) {
+    var countTagsIdFromPersonMaxCostRecipe = tagRepository.findCountTagsInPersonMaxCostRecipe(id);
+    var maxCount = getMaxCountTagIdInPersonMaxCostRecipe(countTagsIdFromPersonMaxCostRecipe);
+    return pagedResourcesAssembler.toModel(
+        tagRepository.findTagByIdIn(
+            getTagsIdCompareToMaxCount(countTagsIdFromPersonMaxCostRecipe, maxCount),
+            PageRequest.of(page, size)),
+        tagDtoAssembler);
+  }
+
+  private Long getMaxCountTagIdInPersonMaxCostRecipe(List<CountTagsId> countTagsIdList) {
+    return countTagsIdList.stream()
+        .mapToLong(CountTagsId::getTagCount)
+        .max()
+        .orElseThrow(
+            () ->
+                new TagNotFoundException("Most widely used tag in recipe with max cost not found"));
+  }
+
+  private List<Long> getTagsIdCompareToMaxCount(List<CountTagsId> countTagsIdList, Long maxCount) {
+    return countTagsIdList.stream()
+        .filter(countTagsId -> Objects.equals(countTagsId.getTagCount(), maxCount))
+        .map(CountTagsId::getTagId)
+        .toList();
+  }
+
+  @Override
+  public TagDto getTagByName(String name) {
     return entityDtoMapper.tagToTagDto(
         tagRepository
             .findTagByName(name)
@@ -54,7 +89,7 @@ public class TagServiceImpl implements TagService {
                 () -> {
                   var tag = new Tag();
                   tag.setName(name);
-                  return tagRepository.save(tag);
+                  return saveTag(tag);
                 }));
   }
 

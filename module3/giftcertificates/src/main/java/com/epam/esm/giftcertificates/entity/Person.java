@@ -7,22 +7,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity(name = "\"user\"")
+@Entity(name = "person")
 @Getter
 @Setter
-@RequiredArgsConstructor
-public class User extends AbstractEntity {
+public class Person extends AbstractEntity {
 
   @Id
-  @GeneratedValue(generator = "user_id_seq")
-  @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
+  @GeneratedValue(generator = "person_id_seq")
+  @SequenceGenerator(name = "person_id_seq", sequenceName = "person_id_seq", allocationSize = 1)
   @Column(name = "id", nullable = false, unique = true)
   private Long id;
 
@@ -32,14 +30,14 @@ public class User extends AbstractEntity {
   @Column(name = "password", nullable = false)
   private String password;
 
-  @OneToMany(mappedBy = "user")
-  private Set<Order> orders = new HashSet<>();
+  @OneToMany(mappedBy = "person")
+  private Set<Recipe> recipes = new HashSet<>();
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    User user = (User) o;
+    Person user = (Person) o;
     return Objects.equals(id, user.id);
   }
 

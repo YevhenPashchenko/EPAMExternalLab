@@ -2,13 +2,13 @@ package com.epam.esm.giftcertificates.mapper;
 
 import com.epam.esm.giftcertificates.dto.GiftCertificateDto;
 import com.epam.esm.giftcertificates.dto.GiftCertificateDtoForUpdate;
-import com.epam.esm.giftcertificates.dto.OrderDto;
+import com.epam.esm.giftcertificates.dto.RecipeDto;
 import com.epam.esm.giftcertificates.dto.TagDto;
-import com.epam.esm.giftcertificates.dto.UserDto;
+import com.epam.esm.giftcertificates.dto.PersonDto;
 import com.epam.esm.giftcertificates.entity.GiftCertificate;
-import com.epam.esm.giftcertificates.entity.Order;
+import com.epam.esm.giftcertificates.entity.Recipe;
 import com.epam.esm.giftcertificates.entity.Tag;
-import com.epam.esm.giftcertificates.entity.User;
+import com.epam.esm.giftcertificates.entity.Person;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -63,18 +63,18 @@ public interface EntityDtoMapper {
   TagDto tagToTagDto(Tag tag);
 
   /**
-   * Converts {@link User} object to {@link UserDto} object.
+   * Converts {@link Person} object to {@link PersonDto} object.
    *
-   * @param user {@link User} object.
-   * @return {@link UserDto} object.
+   * @param person {@link Person} object.
+   * @return {@link PersonDto} object.
    */
-  UserDto userToUserDto(User user);
+  PersonDto personToPersonDto(Person person);
 
   /**
-   * Converts {@link Order} object to {@link OrderDto} object.
+   * Converts {@link Recipe} object to {@link RecipeDto} object.
    *
-   * @param order {@link Order} object.
-   * @return {@link OrderDto} object.
+   * @param recipe {@link Recipe} object.
+   * @return {@link RecipeDto} object.
    */
-  OrderDto orderToOrderDto(Order order);
+  RecipeDto recipeToRecipeDto(Recipe recipe);
 }

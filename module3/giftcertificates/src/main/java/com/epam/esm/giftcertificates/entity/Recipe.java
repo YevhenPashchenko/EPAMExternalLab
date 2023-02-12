@@ -10,7 +10,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -18,15 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Entity(name = "\"order\"")
+@Entity(name = "recipe")
 @Getter
 @Setter
-@RequiredArgsConstructor
-public class Order extends AbstractEntity {
+public class Recipe extends AbstractEntity {
 
   @Id
-  @GeneratedValue(generator = "order_id_seq")
-  @SequenceGenerator(name = "order_id_seq", sequenceName = "order_id_seq", allocationSize = 1)
+  @GeneratedValue(generator = "recipe_id_seq")
+  @SequenceGenerator(name = "recipe_id_seq", sequenceName = "recipe_id_seq", allocationSize = 1)
   @Column(name = "id", nullable = false, unique = true)
   private Long id;
 
@@ -35,21 +33,21 @@ public class Order extends AbstractEntity {
 
   @ManyToMany
   @JoinTable(
-      name = "gift_certificates_order",
-      joinColumns = @JoinColumn(name = "order_id"),
+      name = "gift_certificates_recipe",
+      joinColumns = @JoinColumn(name = "recipe_id"),
       inverseJoinColumns = @JoinColumn(name = "gift_certificate_id"))
   private List<GiftCertificate> giftCertificates = new ArrayList<>();
 
   @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  @JoinColumn(name = "person_id", nullable = false)
+  private Person person;
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Order order = (Order) o;
-    return Objects.equals(id, order.id);
+    Recipe recipe = (Recipe) o;
+    return Objects.equals(id, recipe.id);
   }
 
   @Override

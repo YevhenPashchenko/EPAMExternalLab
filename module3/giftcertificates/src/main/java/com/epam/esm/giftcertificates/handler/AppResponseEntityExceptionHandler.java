@@ -1,12 +1,12 @@
 package com.epam.esm.giftcertificates.handler;
 
-import com.epam.esm.giftcertificates.constant.ErrorCodeConstant;
+import com.epam.esm.giftcertificates.constant.HttpCodeCustom;
 import com.epam.esm.giftcertificates.dto.ErrorDto;
 import com.epam.esm.giftcertificates.handler.exception.GiftCertificateNotFoundException;
-import com.epam.esm.giftcertificates.handler.exception.OrderNotFoundException;
-import com.epam.esm.giftcertificates.handler.exception.OrderTotalCostCalculationException;
+import com.epam.esm.giftcertificates.handler.exception.RecipeNotFoundException;
+import com.epam.esm.giftcertificates.handler.exception.RecipeTotalCostCalculationException;
 import com.epam.esm.giftcertificates.handler.exception.TagNotFoundException;
-import com.epam.esm.giftcertificates.handler.exception.UserNotFoundException;
+import com.epam.esm.giftcertificates.handler.exception.PersonNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.NonNull;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,7 +27,7 @@ public class AppResponseEntityExceptionHandler extends ResponseEntityExceptionHa
   public ResponseEntity<ErrorDto> handleTagNotFoundException(Exception exception) {
     var error =
         ErrorDto.builder()
-            .code(ErrorCodeConstant.TAG_NOT_FOUND)
+            .code(HttpCodeCustom.TAG_NOT_FOUND)
             .message(exception.getMessage())
             .build();
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
@@ -37,34 +37,34 @@ public class AppResponseEntityExceptionHandler extends ResponseEntityExceptionHa
   public ResponseEntity<ErrorDto> handleGiftCertificateNotFoundException(Exception exception) {
     var error =
         ErrorDto.builder()
-            .code(ErrorCodeConstant.GIFT_CERTIFICATE_NOT_FOUND)
+            .code(HttpCodeCustom.GIFT_CERTIFICATE_NOT_FOUND)
             .message(exception.getMessage())
             .build();
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 
-  @ExceptionHandler(UserNotFoundException.class)
-  public ResponseEntity<ErrorDto> handleUserNotFoundException(Exception exception) {
+  @ExceptionHandler(PersonNotFoundException.class)
+  public ResponseEntity<ErrorDto> handlePersonNotFoundException(Exception exception) {
     var error =
         ErrorDto.builder()
-            .code(ErrorCodeConstant.USER_NOT_FOUND)
+            .code(HttpCodeCustom.PERSON_NOT_FOUND)
             .message(exception.getMessage())
             .build();
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 
-  @ExceptionHandler(OrderNotFoundException.class)
-  public ResponseEntity<ErrorDto> handleOrderNotFoundException(Exception exception) {
+  @ExceptionHandler(RecipeNotFoundException.class)
+  public ResponseEntity<ErrorDto> handleRecipeNotFoundException(Exception exception) {
     var error =
         ErrorDto.builder()
-            .code(ErrorCodeConstant.ORDER_NOT_FOUND)
+            .code(HttpCodeCustom.RECIPE_NOT_FOUND)
             .message(exception.getMessage())
             .build();
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 
-  @ExceptionHandler(OrderTotalCostCalculationException.class)
-  public ResponseEntity<ErrorDto> handleOrderTotalCostException(Exception exception) {
+  @ExceptionHandler(RecipeTotalCostCalculationException.class)
+  public ResponseEntity<ErrorDto> handleRecipeTotalCostException(Exception exception) {
     var error =
         ErrorDto.builder()
             .code(HttpStatus.INTERNAL_SERVER_ERROR.value())

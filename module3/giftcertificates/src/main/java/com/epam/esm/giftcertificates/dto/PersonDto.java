@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -12,8 +11,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
-public class UserDto extends RepresentationModel<UserDto> {
+public class PersonDto extends RepresentationModel<PersonDto> {
 
   private Long id;
 
@@ -29,8 +27,8 @@ public class UserDto extends RepresentationModel<UserDto> {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
-    UserDto userDto = (UserDto) o;
-    return Objects.equals(id, userDto.id);
+    PersonDto personDto = (PersonDto) o;
+    return Objects.equals(id, personDto.id);
   }
 
   @Override

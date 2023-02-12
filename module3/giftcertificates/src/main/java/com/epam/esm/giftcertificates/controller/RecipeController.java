@@ -1,8 +1,7 @@
 package com.epam.esm.giftcertificates.controller;
 
-import com.epam.esm.giftcertificates.dto.OrderDto;
-import com.epam.esm.giftcertificates.service.OrderService;
-import jakarta.validation.Valid;
+import com.epam.esm.giftcertificates.dto.RecipeDto;
+import com.epam.esm.giftcertificates.service.RecipeService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
@@ -18,35 +17,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/persons")
 @RequiredArgsConstructor
-@Valid
-public class OrderController {
+public class RecipeController {
 
-  private final OrderService orderService;
+  private final RecipeService recipeService;
 
   @PostMapping(
-      value = "/{id}/orders",
+      value = "/{id}/recipes",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public EntityModel<OrderDto> createOrder(
-      @PathVariable("id") Long id, @RequestBody OrderDto orderDto) {
-    return orderService.createOrder(id, orderDto);
+  public EntityModel<RecipeDto> create(
+      @PathVariable("id") Long id, @RequestBody RecipeDto recipeDto) {
+    return recipeService.createRecipe(id, recipeDto);
   }
 
-  @GetMapping(value = "/{id}/orders", produces = MediaType.APPLICATION_JSON_VALUE)
-  public PagedModel<OrderDto> getAllOrderDto(
+  @GetMapping(value = "/{id}/recipes", produces = MediaType.APPLICATION_JSON_VALUE)
+  public PagedModel<RecipeDto> getAll(
       @PathVariable("id") Long id,
       @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be not less 0")
           int page,
       @RequestParam(defaultValue = "20")
           @Range(min = 1, max = 100, message = "size must be between 1 and 100")
           int size) {
-    return orderService.getAllOrderDto(id, page, size);
+    return recipeService.getAllRecipes(id, page, size);
   }
 
-  @GetMapping(value = "/orders/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public EntityModel<OrderDto> getOrderDtoById(@PathVariable("id") Long id) {
-    return orderService.getOrderDtoById(id);
+  @GetMapping(value = "/recipes/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public EntityModel<RecipeDto> getById(@PathVariable("id") Long id) {
+    return recipeService.getRecipeById(id);
   }
 }

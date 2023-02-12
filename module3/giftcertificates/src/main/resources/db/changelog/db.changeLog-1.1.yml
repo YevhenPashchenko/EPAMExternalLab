@@ -1,17 +1,17 @@
 databaseChangeLog:
   - changeSet:
-      id: create user, order, gift_certificates_order tables
+      id: create person, recipe, gift_certificates_recipe tables
       author: Yevhen Pashchenko
       changes:
         - createTable:
-            tableName: user
+            tableName: person
             columns:
               - column:
                   name: id
                   type: bigint
                   constraints:
                     primaryKey: true
-                    primaryKeyName: user_id_pkey
+                    primaryKeyName: person_id_pkey
                     nullable: false
               - column:
                   name: email
@@ -35,21 +35,21 @@ databaseChangeLog:
                     nullable: false
         - addUniqueConstraint:
             columnNames: email
-            constraintName: user_email_unique
-            tableName: user
+            constraintName: person_email_unique
+            tableName: person
         - createSequence:
             dataType: int
             minValue: 1
-            sequenceName: user_id_seq
+            sequenceName: person_id_seq
         - createTable:
-            tableName: order
+            tableName: recipe
             columns:
               - column:
                   name: id
                   type: bigint
                   constraints:
                     primaryKey: true
-                    primaryKeyName: order_id_pkey
+                    primaryKeyName: recipe_id_pkey
                     nullable: false
               - column:
                   name: total_cost
@@ -67,27 +67,27 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: user_id
+                  name: person_id
                   type: bigint
                   constraints:
                     nullable: false
         - createSequence:
             dataType: int
             minValue: 1
-            sequenceName: order_id_seq
+            sequenceName: recipe_id_seq
         - addForeignKeyConstraint:
-            baseColumnNames: user_id
-            baseTableName: order
-            constraintName: order_user_id_fkey
+            baseColumnNames: person_id
+            baseTableName: recipe
+            constraintName: recipe_person_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: cascade
             onUpdate: cascade
             referencedColumnNames: id
-            referencedTableName: user
+            referencedTableName: person
             validateForeignKey: true
         - createTable:
-            tableName: gift_certificates_order
+            tableName: gift_certificates_recipe
             columns:
               - column:
                   name: gift_certificate_id
@@ -95,14 +95,14 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: order_id
+                  name: recipe_id
                   type: bigint
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
             baseColumnNames: gift_certificate_id
-            baseTableName: gift_certificates_order
-            constraintName: gift_certificates_order_gift_certificate_id_fkey
+            baseTableName: gift_certificates_recipe
+            constraintName: gift_certificates_recipe_gift_certificate_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: cascade
@@ -111,13 +111,13 @@ databaseChangeLog:
             referencedTableName: gift_certificate
             validateForeignKey: true
         - addForeignKeyConstraint:
-            baseColumnNames: order_id
-            baseTableName: gift_certificates_order
-            constraintName: gift_certificates_order_order_id_fkey
+            baseColumnNames: recipe_id
+            baseTableName: gift_certificates_recipe
+            constraintName: gift_certificates_recipe_recipe_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: cascade
             onUpdate: cascade
             referencedColumnNames: id
-            referencedTableName: order
+            referencedTableName: recipe
             validateForeignKey: true

@@ -9,10 +9,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -20,7 +18,6 @@ import java.util.Set;
 @Entity(name = "tag")
 @Getter
 @Setter
-@RequiredArgsConstructor
 public class Tag extends AbstractEntity {
 
   @Id
@@ -38,13 +35,6 @@ public class Tag extends AbstractEntity {
       joinColumns = @JoinColumn(name = "tag_id"),
       inverseJoinColumns = @JoinColumn(name = "gift_certificate_id"))
   private Set<GiftCertificate> giftCertificates = new HashSet<>();
-
-  public Tag(Long id, String name, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
-    this.id = id;
-    this.name = name;
-    super.setCreateDate(createDate);
-    super.setLastUpdateDate(lastUpdateDate);
-  }
 
   @Override
   public boolean equals(Object o) {

@@ -3,7 +3,7 @@
   "email": "user1@mail.com",
   "_links": {
     "self": {
-      "href": "http://localhost/users/1"
+      "href": "http://localhost/persons/1"
     }
   }
 }
