@@ -1,22 +1,22 @@
 package com.epam.esm.giftcertificates.integration.controller;
 
 import com.epam.esm.giftcertificates.GiftCertificatesApplication;
-import com.epam.esm.giftcertificates.integration.constant.PathConstant;
-import com.epam.esm.giftcertificates.integration.constant.SqlConstant;
-import com.epam.esm.giftcertificates.integration.constant.UrlConstant;
+import com.epam.esm.giftcertificates.integration.constant.TestEntityFieldValues;
+import com.epam.esm.giftcertificates.integration.constant.TestUrls;
 import com.epam.esm.giftcertificates.integration.container.PostgreSqlTestContainer;
-import com.epam.esm.giftcertificates.integration.reader.JsonFileReader;
+import com.epam.esm.giftcertificates.repository.PersonRepository;
+import com.epam.esm.giftcertificates.util.TestEntityFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(PostgreSqlTestContainer.class)
@@ -24,62 +24,90 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class PersonControllerIntegrationTest {
 
-  @Autowired private MockMvc mockMvc;
-  @Autowired private JdbcTemplate jdbcTemplate;
-  private final JsonFileReader jsonFileReader = new JsonFileReader();
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private PersonRepository personRepository;
 
-  @BeforeEach
-  public void execute() {
-    jdbcTemplate.execute(SqlConstant.TRUNCATE_TABLES);
-    jdbcTemplate.execute(SqlConstant.RESTART_GIFT_CERTIFICATE_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.RESTART_RECIPE_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.RESTART_TAG_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.RESTART_PERSON_ID_SEQUENCE);
-    jdbcTemplate.execute(SqlConstant.CREATE_PERSON);
-  }
+    @BeforeEach
+    public void execute() {
+        personRepository.deleteAll();
+    }
 
-  @Test
-  void shouldReturnPersonDtoPagedModel_whenGetAllPersons() throws Exception {
-    // WHEN
-    var mvcResult =
-        mockMvc
-            .perform(MockMvcRequestBuilders.get(UrlConstant.GET_ALL_PERSONS_URL))
+    @Test
+    void getAll_shouldReturnPageOfPersons_whenCalledGetAllEndpointWithValidPagination() throws Exception {
+        // WHEN
+        personRepository.save(
+            TestEntityFactory.createPerson(TestEntityFieldValues.EMAIL, TestEntityFieldValues.PASSWORD));
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.get(TestUrls.PERSONS_URL + TestUrls.VALID_PAGINATION_URL))
             .andExpect(status().isOk())
-            .andReturn();
+            .andExpect(
+                jsonPath("$._embedded.personDtoList[0].email").value(TestEntityFieldValues.EMAIL)
+            );
 
-    // THEN
-    assertEquals(
-        jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_PERSON_DTO_PAGED_MODEL),
-        mvcResult.getResponse().getContentAsString());
-  }
+        var person = personRepository.findAll().get(0);
+        assertThat(personRepository.count()).isEqualTo(1);
+        assertThat(person.getEmail()).isEqualTo(TestEntityFieldValues.EMAIL);
+    }
 
-  @Test
-  void shouldReturnPersonDtoEntityModel_whenGetPersonByIdThatExists() throws Exception {
-    // WHEN
-    var mvcResult =
-            mockMvc
-                    .perform(MockMvcRequestBuilders.get(UrlConstant.GET_PERSON_BY_ID_URL))
-                    .andExpect(status().isOk())
-                    .andReturn();
+    @Test
+    void getAll_shouldReturn400_whenCalledGetAllEndpointWithNotValidPageOfPagination() throws Exception {
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.get(TestUrls.PERSONS_URL + TestUrls.NOT_VALID_PAGE_PAGINATION_URL))
+            .andExpect(status().isBadRequest())
+            .andExpectAll(
+                jsonPath("$.code").value(400),
+                jsonPath("$.message").value("Page index must not be less than zero")
+            );
 
-    // THEN
-    assertEquals(
-            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_PERSON_DTO_ENTITY_MODEL),
-            mvcResult.getResponse().getContentAsString());
-  }
+        assertThat(personRepository.count()).isZero();
+    }
 
-  @Test
-  void shouldReturnErrorDto_whenGetPersonByIdThatNotExists() throws Exception {
-    // WHEN
-    var mvcResult =
-            mockMvc
-                    .perform(MockMvcRequestBuilders.get(UrlConstant.GET_PERSON_BY_ID_NOT_EXIST_URL))
-                    .andExpect(status().isNotFound())
-                    .andReturn();
+    @Test
+    void getAll_shouldReturn400_whenCalledGetAllEndpointWithNotValidSizeOfPagination() throws Exception {
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.get(TestUrls.PERSONS_URL + TestUrls.NOT_VALID_SIZE_PAGINATION_URL))
+            .andExpect(status().isBadRequest())
+            .andExpectAll(
+                jsonPath("$.code").value(400),
+                jsonPath("$.message").value("Page size must not be less than one")
+            );
 
-    // THEN
-    assertEquals(
-            jsonFileReader.readJsonAsString(PathConstant.PATH_TO_PRODUCES_PERSON_ERROR_DTO),
-            mvcResult.getResponse().getContentAsString());
-  }
+        assertThat(personRepository.count()).isZero();
+    }
+
+    @Test
+    void getById_shouldReturnPerson_whenCalledGetByIdEndpointWithValidId() throws Exception {
+        // GIVEN
+        var person = personRepository.save(
+            TestEntityFactory.createPerson(TestEntityFieldValues.EMAIL, TestEntityFieldValues.PASSWORD));
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.get(TestUrls.PERSONS_URL + "/" + person.getId()))
+            .andExpect(status().isOk())
+            .andExpect(
+                jsonPath("$.email").value(TestEntityFieldValues.EMAIL)
+            );
+
+        assertThat(personRepository.count()).isEqualTo(1);
+        assertThat(person.getEmail()).isEqualTo(TestEntityFieldValues.EMAIL);
+    }
+
+    @Test
+    void getById_shouldReturnErrorDto_whenCalledGetByIdEndpointWithNotValidId() throws Exception {
+        // GIVEN
+        var id = 0L;
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.get(TestUrls.PERSONS_URL + "/" + id))
+            .andExpect(status().isNotFound())
+            .andExpectAll(
+                jsonPath("$.code").value(40403),
+                jsonPath("$.message").value("Requested resource not found (id = " + id + ")")
+            );
+
+        assertThat(personRepository.count()).isZero();
+    }
 }

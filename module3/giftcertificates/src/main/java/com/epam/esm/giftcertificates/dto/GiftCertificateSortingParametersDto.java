@@ -17,15 +17,16 @@ import java.util.Map;
 @JsonNaming(PropertyNamingStrategies.KebabCaseStrategy.class)
 public class GiftCertificateSortingParametersDto {
 
-  private String tagName;
-  private String partName;
-  private String partDescription;
-  private JsonNode sortBy;
+    private String tagName;
+    private String partName;
+    private String partDescription;
+    private JsonNode sortBy;
 
-  public Map<String, String> getSortBy() {
-    var map =
-        new ObjectMapper()
-            .convertValue(sortBy, new TypeReference<LinkedHashMap<String, String>>() {});
-    return map != null ? map : new HashMap<>();
-  }
+    public Map<String, String> getSortBy() {
+        var map =
+            new ObjectMapper()
+                .convertValue(sortBy, new TypeReference<LinkedHashMap<String, String>>() {
+                });
+        return map != null ? map : new HashMap<>();
+    }
 }

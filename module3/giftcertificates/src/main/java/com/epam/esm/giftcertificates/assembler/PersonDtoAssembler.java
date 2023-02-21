@@ -14,22 +14,22 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 public class PersonDtoAssembler extends RepresentationModelAssemblerSupport<Person, PersonDto> {
 
-  private final EntityDtoMapper entityDtoMapper;
+    private final EntityDtoMapper entityDtoMapper;
 
-  public PersonDtoAssembler(EntityDtoMapper entityDtoMapper) {
-    super(PersonController.class, PersonDto.class);
-    this.entityDtoMapper = entityDtoMapper;
-  }
+    public PersonDtoAssembler(EntityDtoMapper entityDtoMapper) {
+        super(PersonController.class, PersonDto.class);
+        this.entityDtoMapper = entityDtoMapper;
+    }
 
-  @Override
-  public PersonDto toModel(@NonNull Person person) {
-    var personDto = entityDtoMapper.personToPersonDto(person);
-    addSelfLinkToPerson(personDto);
-    return personDto;
-  }
+    @Override
+    @NonNull
+    public PersonDto toModel(@NonNull Person person) {
+        var personDto = entityDtoMapper.personToPersonDto(person);
+        addSelfLinkToPerson(personDto);
+        return personDto;
+    }
 
-  private void addSelfLinkToPerson(PersonDto personDto) {
-    personDto.add(
-        linkTo(methodOn(PersonController.class).getById(personDto.getId())).withSelfRel());
-  }
+    private void addSelfLinkToPerson(PersonDto personDto) {
+        personDto.add(linkTo(methodOn(PersonController.class).getById(personDto.getId())).withSelfRel());
+    }
 }

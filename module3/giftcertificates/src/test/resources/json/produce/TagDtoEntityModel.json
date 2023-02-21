@@ -1,9 +1,0 @@
-{
-  "id": 1,
-  "name": "tagName1",
-  "_links": {
-    "self": {
-      "href": "http://localhost/tags/1"
-    }
-  }
-}

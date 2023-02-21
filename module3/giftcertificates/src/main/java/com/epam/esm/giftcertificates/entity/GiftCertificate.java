@@ -26,68 +26,71 @@ import java.util.Set;
 @NoArgsConstructor
 public class GiftCertificate extends AbstractEntity {
 
-  @Id
-  @GeneratedValue(generator = "gift_certificate_id_seq")
-  @SequenceGenerator(
-      name = "gift_certificate_id_seq",
-      sequenceName = "gift_certificate_id_seq",
-      allocationSize = 1)
-  @Column(name = "id", nullable = false, unique = true)
-  private Long id;
+    private static final String SEQUENCE_NAME = "gift_certificate_id_seq";
 
-  @Column(name = "name", nullable = false)
-  private String name;
+    @Id
+    @GeneratedValue(generator = SEQUENCE_NAME)
+    @SequenceGenerator(name = SEQUENCE_NAME, sequenceName = SEQUENCE_NAME, allocationSize = 1)
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
 
-  @Column(name = "description", nullable = false)
-  private String description;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-  @Column(name = "price", nullable = false)
-  private BigDecimal price;
+    @Column(name = "description", nullable = false)
+    private String description;
 
-  @Column(name = "duration", nullable = false)
-  private Integer duration;
+    @Column(name = "price", nullable = false, scale = 2)
+    private BigDecimal price;
 
-  @ManyToMany
-  @JoinTable(
-      name = "gift_certificate_tags",
-      joinColumns = @JoinColumn(name = "gift_certificate_id"),
-      inverseJoinColumns = @JoinColumn(name = "tag_id"))
-  private Set<Tag> tags = new HashSet<>();
+    @Column(name = "duration", nullable = false)
+    private Integer duration;
 
-  @ManyToMany
-  @JoinTable(
-      name = "gift_certificates_recipe",
-      joinColumns = @JoinColumn(name = "gift_certificate_id"),
-      inverseJoinColumns = @JoinColumn(name = "recipe_id"))
-  private List<Recipe> recipes = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+        name = "gift_certificate_tags",
+        joinColumns = @JoinColumn(name = "gift_certificate_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
 
-  public GiftCertificate(
-      Long id,
-      String name,
-      String description,
-      BigDecimal price,
-      Integer duration,
-      LocalDateTime createDate,
-      LocalDateTime lastUpdateDate) {
-    this.id = id;
-    this.name = name;
-    this.description = description;
-    this.price = price;
-    this.duration = duration;
-    super.setCreateDate(createDate);
-    super.setLastUpdateDate(lastUpdateDate);
-  }
+    @ManyToMany
+    @JoinTable(
+        name = "gift_certificates_receipt",
+        joinColumns = @JoinColumn(name = "gift_certificate_id"),
+        inverseJoinColumns = @JoinColumn(name = "receipt_id"))
+    private List<Receipt> receipts = new ArrayList<>();
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    GiftCertificate that = (GiftCertificate) o;
-    return Objects.equals(id, that.id);
-  }
+    public GiftCertificate(
+        Long id,
+        String name,
+        String description,
+        BigDecimal price,
+        Integer duration,
+        LocalDateTime createDate,
+        LocalDateTime lastUpdateDate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        super.setCreateDate(createDate);
+        super.setLastUpdateDate(lastUpdateDate);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(id);
-  }
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+        GiftCertificate that = (GiftCertificate) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

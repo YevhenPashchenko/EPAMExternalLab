@@ -14,31 +14,31 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class GiftCertificateDtoAssembler
-    extends RepresentationModelAssemblerSupport<GiftCertificate, GiftCertificateDto> {
+public class GiftCertificateDtoAssembler extends
+    RepresentationModelAssemblerSupport<GiftCertificate, GiftCertificateDto> {
 
-  private final EntityDtoMapper entityDtoMapper;
+    private final EntityDtoMapper entityDtoMapper;
 
-  public GiftCertificateDtoAssembler(EntityDtoMapper entityDtoMapper) {
-    super(GiftCertificateController.class, GiftCertificateDto.class);
-    this.entityDtoMapper = entityDtoMapper;
-  }
+    public GiftCertificateDtoAssembler(EntityDtoMapper entityDtoMapper) {
+        super(GiftCertificateController.class, GiftCertificateDto.class);
+        this.entityDtoMapper = entityDtoMapper;
+    }
 
-  @Override
-  public GiftCertificateDto toModel(@NonNull GiftCertificate giftCertificate) {
-    var giftCertificateDto = entityDtoMapper.giftCertificateToGiftCertificateDto(giftCertificate);
-    giftCertificateDto.getTags().forEach(this::addSelfLinkToTag);
-    addSelfLinkToGiftCertificate(giftCertificateDto);
-    return giftCertificateDto;
-  }
+    @Override
+    @NonNull
+    public GiftCertificateDto toModel(@NonNull GiftCertificate giftCertificate) {
+        var giftCertificateDto = entityDtoMapper.giftCertificateToGiftCertificateDto(giftCertificate);
+        giftCertificateDto.getTags().forEach(this::addSelfLinkToTag);
+        addSelfLinkToGiftCertificate(giftCertificateDto);
+        return giftCertificateDto;
+    }
 
-  private void addSelfLinkToTag(TagDto tagDto) {
-    tagDto.add(linkTo(methodOn(TagController.class).getById(tagDto.getId())).withSelfRel());
-  }
+    private void addSelfLinkToTag(TagDto tagDto) {
+        tagDto.add(linkTo(methodOn(TagController.class).getById(tagDto.getId())).withSelfRel());
+    }
 
-  private void addSelfLinkToGiftCertificate(GiftCertificateDto giftCertificateDto) {
-    giftCertificateDto.add(
-        linkTo(methodOn(GiftCertificateController.class).getById(giftCertificateDto.getId()))
-            .withSelfRel());
-  }
+    private void addSelfLinkToGiftCertificate(GiftCertificateDto giftCertificateDto) {
+        giftCertificateDto.add(
+            linkTo(methodOn(GiftCertificateController.class).getById(giftCertificateDto.getId())).withSelfRel());
+    }
 }

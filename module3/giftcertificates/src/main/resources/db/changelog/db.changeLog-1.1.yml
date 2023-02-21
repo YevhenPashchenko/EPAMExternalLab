@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: create person, recipe, gift_certificates_recipe tables
+      id: create person, receipt, gift_certificates_receipt tables
       author: Yevhen Pashchenko
       changes:
         - createTable:
@@ -42,18 +42,18 @@ databaseChangeLog:
             minValue: 1
             sequenceName: person_id_seq
         - createTable:
-            tableName: recipe
+            tableName: receipt
             columns:
               - column:
                   name: id
                   type: bigint
                   constraints:
                     primaryKey: true
-                    primaryKeyName: recipe_id_pkey
+                    primaryKeyName: receipt_id_pkey
                     nullable: false
               - column:
                   name: total_cost
-                  type: decimal
+                  type: decimal(7, 2)
                   constraints:
                     nullable: false
               - column:
@@ -74,11 +74,11 @@ databaseChangeLog:
         - createSequence:
             dataType: int
             minValue: 1
-            sequenceName: recipe_id_seq
+            sequenceName: receipt_id_seq
         - addForeignKeyConstraint:
             baseColumnNames: person_id
-            baseTableName: recipe
-            constraintName: recipe_person_id_fkey
+            baseTableName: receipt
+            constraintName: receipt_person_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: cascade
@@ -87,7 +87,7 @@ databaseChangeLog:
             referencedTableName: person
             validateForeignKey: true
         - createTable:
-            tableName: gift_certificates_recipe
+            tableName: gift_certificates_receipt
             columns:
               - column:
                   name: gift_certificate_id
@@ -95,14 +95,14 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: recipe_id
+                  name: receipt_id
                   type: bigint
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
             baseColumnNames: gift_certificate_id
-            baseTableName: gift_certificates_recipe
-            constraintName: gift_certificates_recipe_gift_certificate_id_fkey
+            baseTableName: gift_certificates_receipt
+            constraintName: gift_certificates_receipt_gift_certificate_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: cascade
@@ -111,13 +111,13 @@ databaseChangeLog:
             referencedTableName: gift_certificate
             validateForeignKey: true
         - addForeignKeyConstraint:
-            baseColumnNames: recipe_id
-            baseTableName: gift_certificates_recipe
-            constraintName: gift_certificates_recipe_recipe_id_fkey
+            baseColumnNames: receipt_id
+            baseTableName: gift_certificates_receipt
+            constraintName: gift_certificates_receipt_receipt_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: cascade
             onUpdate: cascade
             referencedColumnNames: id
-            referencedTableName: recipe
+            referencedTableName: receipt
             validateForeignKey: true

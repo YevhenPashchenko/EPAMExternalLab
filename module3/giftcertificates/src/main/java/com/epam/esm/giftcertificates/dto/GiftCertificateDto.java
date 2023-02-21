@@ -1,6 +1,8 @@
 package com.epam.esm.giftcertificates.dto;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -16,33 +18,41 @@ import java.util.Objects;
 @Setter
 public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> {
 
-  @Valid private List<TagDto> tags = new ArrayList<>();
+    @Valid
+    private List<TagDto> tags = new ArrayList<>();
 
-  private Long id;
+    private Long id;
 
-  @NotBlank(message = "name must be not empty")
-  private String name;
+    @NotBlank(message = "name must not be empty")
+    private String name;
 
-  @NotBlank(message = "description must be not empty")
-  private String description;
+    @NotBlank(message = "description must not be empty")
+    private String description;
 
-  @Min(value = 0, message = "price must be positive value")
-  private BigDecimal price;
+    @DecimalMin(value = "0.01", message = "price must be greater than 0")
+    @Digits(integer = 7, fraction = 2, message = "number is out of range (expected <7 integer>.<2 fraction>)")
+    private BigDecimal price;
 
-  @Min(value = 0, message = "duration must be positive value")
-  private Integer duration;
+    @Min(value = 1, message = "duration must be greater than 0")
+    private Integer duration;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-    GiftCertificateDto that = (GiftCertificateDto) o;
-    return Objects.equals(id, that.id);
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        GiftCertificateDto that = (GiftCertificateDto) o;
+        return Objects.equals(id, that.id);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), id);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id);
+    }
 }

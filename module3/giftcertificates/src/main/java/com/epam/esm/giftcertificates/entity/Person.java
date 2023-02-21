@@ -18,31 +18,37 @@ import java.util.Set;
 @Setter
 public class Person extends AbstractEntity {
 
-  @Id
-  @GeneratedValue(generator = "person_id_seq")
-  @SequenceGenerator(name = "person_id_seq", sequenceName = "person_id_seq", allocationSize = 1)
-  @Column(name = "id", nullable = false, unique = true)
-  private Long id;
+    private static final String SEQUENCE_NAME = "person_id_seq";
 
-  @Column(name = "email", unique = true)
-  private String email;
+    @Id
+    @GeneratedValue(generator = SEQUENCE_NAME)
+    @SequenceGenerator(name = SEQUENCE_NAME, sequenceName = SEQUENCE_NAME, allocationSize = 1)
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
 
-  @Column(name = "password", nullable = false)
-  private String password;
+    @Column(name = "email", unique = true)
+    private String email;
 
-  @OneToMany(mappedBy = "person")
-  private Set<Recipe> recipes = new HashSet<>();
+    @Column(name = "password", nullable = false)
+    private String password;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Person user = (Person) o;
-    return Objects.equals(id, user.id);
-  }
+    @OneToMany(mappedBy = "person")
+    private Set<Receipt> receipts = new HashSet<>();
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(id);
-  }
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+        Person user = (Person) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
