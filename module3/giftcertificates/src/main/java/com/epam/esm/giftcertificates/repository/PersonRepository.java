@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
  * @author Yevhen Pashchenko
  */
 @Repository
-public interface PersonRepository extends JpaRepository<Person, Long> {}
+public interface PersonRepository extends JpaRepository<Person, Long> {
+
+}

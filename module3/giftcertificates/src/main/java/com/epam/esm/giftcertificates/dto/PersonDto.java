@@ -13,26 +13,32 @@ import java.util.Objects;
 @Setter
 public class PersonDto extends RepresentationModel<PersonDto> {
 
-  private Long id;
+    private Long id;
 
-  @Email(message = "email not valid")
-  private String email;
+    @Email(message = "email not valid")
+    private String email;
 
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  @NotBlank(message = "password must be not empty")
-  private String password;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotBlank(message = "password must be not empty")
+    private String password;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-    PersonDto personDto = (PersonDto) o;
-    return Objects.equals(id, personDto.id);
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        PersonDto personDto = (PersonDto) o;
+        return Objects.equals(id, personDto.id);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), id);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id);
+    }
 }

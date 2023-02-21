@@ -14,21 +14,22 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 public class TagDtoAssembler extends RepresentationModelAssemblerSupport<Tag, TagDto> {
 
-  private final EntityDtoMapper entityDtoMapper;
+    private final EntityDtoMapper entityDtoMapper;
 
-  public TagDtoAssembler(EntityDtoMapper entityDtoMapper) {
-    super(TagController.class, TagDto.class);
-    this.entityDtoMapper = entityDtoMapper;
-  }
+    public TagDtoAssembler(EntityDtoMapper entityDtoMapper) {
+        super(TagController.class, TagDto.class);
+        this.entityDtoMapper = entityDtoMapper;
+    }
 
-  @Override
-  public TagDto toModel(@NonNull Tag tag) {
-    var tagDto = entityDtoMapper.tagToTagDto(tag);
-    addSelfLinkToTag(tagDto);
-    return tagDto;
-  }
+    @Override
+    @NonNull
+    public TagDto toModel(@NonNull Tag tag) {
+        var tagDto = entityDtoMapper.tagToTagDto(tag);
+        addSelfLinkToTag(tagDto);
+        return tagDto;
+    }
 
-  private void addSelfLinkToTag(TagDto tagDto) {
-    tagDto.add(linkTo(methodOn(TagController.class).getById(tagDto.getId())).withSelfRel());
-  }
+    private void addSelfLinkToTag(TagDto tagDto) {
+        tagDto.add(linkTo(methodOn(TagController.class).getById(tagDto.getId())).withSelfRel());
+    }
 }

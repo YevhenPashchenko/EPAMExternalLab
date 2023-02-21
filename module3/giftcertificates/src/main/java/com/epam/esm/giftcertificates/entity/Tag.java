@@ -20,32 +20,38 @@ import java.util.Set;
 @Setter
 public class Tag extends AbstractEntity {
 
-  @Id
-  @GeneratedValue(generator = "tag_id_seq")
-  @SequenceGenerator(name = "tag_id_seq", sequenceName = "tag_id_seq", allocationSize = 1)
-  @Column(name = "id", nullable = false, unique = true)
-  private Long id;
+    private static final String SEQUENCE_NAME = "tag_id_seq";
 
-  @Column(name = "name", nullable = false, unique = true)
-  private String name;
+    @Id
+    @GeneratedValue(generator = SEQUENCE_NAME)
+    @SequenceGenerator(name = SEQUENCE_NAME, sequenceName = SEQUENCE_NAME, allocationSize = 1)
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
 
-  @ManyToMany
-  @JoinTable(
-      name = "gift_certificate_tags",
-      joinColumns = @JoinColumn(name = "tag_id"),
-      inverseJoinColumns = @JoinColumn(name = "gift_certificate_id"))
-  private Set<GiftCertificate> giftCertificates = new HashSet<>();
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Tag tag = (Tag) o;
-    return Objects.equals(id, tag.id);
-  }
+    @ManyToMany
+    @JoinTable(
+        name = "gift_certificate_tags",
+        joinColumns = @JoinColumn(name = "tag_id"),
+        inverseJoinColumns = @JoinColumn(name = "gift_certificate_id"))
+    private Set<GiftCertificate> giftCertificates = new HashSet<>();
 
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(id);
-  }
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+        Tag tag = (Tag) o;
+        return Objects.equals(id, tag.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }
