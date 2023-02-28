@@ -1,0 +1,117 @@
+databaseChangeLog:
+  - changeSet:
+      id: create tag, gift_certificate, gift_certificate_tags tables
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: tag
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: tag_id_pkey
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_update_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: name
+            constraintName: tag_name_unique
+            tableName: tag
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: tag_id_seq
+        - createTable:
+            tableName: gift_certificate
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: gift_certificate_id_pkey
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: decimal(7, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: duration
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_update_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: gift_certificate_id_seq
+        - createTable:
+            tableName: gift_certificate_tags
+            columns:
+              - column:
+                  name: gift_certificate_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tag_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: gift_certificate_id
+            baseTableName: gift_certificate_tags
+            constraintName: gift_certificate_tags_gift_certificate_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: id
+            referencedTableName: gift_certificate
+            validateForeignKey: true
+        - addForeignKeyConstraint:
+            baseColumnNames: tag_id
+            baseTableName: gift_certificate_tags
+            constraintName: gift_certificate_tags_tag_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: id
+            referencedTableName: tag
+            validateForeignKey: true

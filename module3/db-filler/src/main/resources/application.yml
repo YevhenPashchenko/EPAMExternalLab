@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/giftcertificates
+    username: postgres
+    password: postgres
+  liquibase:
+    driver-class-name: org.postgresql.Driver
+    change-log: classpath:/db/db.changeLog-master.yml
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: ALL
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE

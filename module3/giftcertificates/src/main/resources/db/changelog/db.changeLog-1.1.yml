@@ -1,0 +1,123 @@
+databaseChangeLog:
+  - changeSet:
+      id: create person, receipt, gift_certificates_receipt tables
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: person
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: person_id_pkey
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_update_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: email
+            constraintName: person_email_unique
+            tableName: person
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: person_id_seq
+        - createTable:
+            tableName: receipt
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: receipt_id_pkey
+                    nullable: false
+              - column:
+                  name: total_cost
+                  type: decimal(7, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_update_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: person_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: receipt_id_seq
+        - addForeignKeyConstraint:
+            baseColumnNames: person_id
+            baseTableName: receipt
+            constraintName: receipt_person_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: id
+            referencedTableName: person
+            validateForeignKey: true
+        - createTable:
+            tableName: gift_certificates_receipt
+            columns:
+              - column:
+                  name: gift_certificate_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: receipt_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: gift_certificate_id
+            baseTableName: gift_certificates_receipt
+            constraintName: gift_certificates_receipt_gift_certificate_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: id
+            referencedTableName: gift_certificate
+            validateForeignKey: true
+        - addForeignKeyConstraint:
+            baseColumnNames: receipt_id
+            baseTableName: gift_certificates_receipt
+            constraintName: gift_certificates_receipt_receipt_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: id
+            referencedTableName: receipt
+            validateForeignKey: true

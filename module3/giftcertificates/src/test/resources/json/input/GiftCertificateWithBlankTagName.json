@@ -1,0 +1,12 @@
+{
+  "tags": [
+    {
+      "id": 1,
+      "name": " "
+    }
+  ],
+  "name": "name1",
+  "description": "description1",
+  "price": 250.5,
+  "duration": 15
+}

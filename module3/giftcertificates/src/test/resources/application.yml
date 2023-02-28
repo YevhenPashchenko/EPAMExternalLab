@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${JDBC_URL}
+    username: postgres
+    password: postgres
+  liquibase:
+    driver-class-name: org.postgresql.Driver
+    change-log: classpath:/db/db.changeLog-master.yml
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: ALL
