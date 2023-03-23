@@ -1,0 +1,8 @@
+{
+  "client-id": "",
+  "client-secret": "client-secret",
+  "scopes": [
+    "clients.write",
+    "clients.read"
+  ]
+}

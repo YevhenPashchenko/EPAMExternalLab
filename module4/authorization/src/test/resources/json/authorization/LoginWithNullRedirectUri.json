@@ -1,0 +1,10 @@
+{
+  "client-id": "base-client",
+  "email": "admin@mail.com",
+  "password": "password",
+  "redirect-uri": null,
+  "scopes": [
+    "clients.read",
+    "clients.write"
+  ]
+}

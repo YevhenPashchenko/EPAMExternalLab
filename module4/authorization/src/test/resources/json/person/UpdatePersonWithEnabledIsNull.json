@@ -1,0 +1,7 @@
+{
+  "email": "user@mail.com",
+  "enabled": null,
+  "authorities": [
+    "admin"
+  ]
+}

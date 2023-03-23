@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:14.1-alpine
+    container_name: authorization-postgres
+    environment:
+      POSTGRES_DB: authorization
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  app:
+    build: ./
+    container_name: authorization-app
+    ports:
+      - "9000:9000"
