@@ -6,7 +6,7 @@ spring:
     password: postgres
   liquibase:
     driver-class-name: org.postgresql.Driver
-    change-log: classpath:/db/db.changeLog-master.yml
+    change-log: classpath:/db/db.authorization.changeLog-master.yml
   jpa:
     properties:
       jakarta:

@@ -187,7 +187,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
 
     private Map<String, Object> parseMap(String data) {
         try {
-            return objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {
+            return objectMapper.readValue(data, new TypeReference<>() {
             });
         } catch (Exception exception) {
             throw new IllegalArgumentException(exception.getMessage(), exception);

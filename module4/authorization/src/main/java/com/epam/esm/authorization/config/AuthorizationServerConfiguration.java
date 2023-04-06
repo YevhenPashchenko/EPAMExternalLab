@@ -83,7 +83,7 @@ public class AuthorizationServerConfiguration {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder().issuer("http://127.0.0.1:9000").build();
     }
 
     @Bean

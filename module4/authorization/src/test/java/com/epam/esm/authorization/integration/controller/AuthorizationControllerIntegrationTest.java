@@ -1,6 +1,7 @@
 package com.epam.esm.authorization.integration.controller;
 
 import com.epam.esm.authorization.AuthorizationApplication;
+import com.epam.esm.authorization.constant.Authorities;
 import com.epam.esm.authorization.integration.constant.TestFilePaths;
 import com.epam.esm.authorization.integration.constant.TestUrls;
 import com.epam.esm.authorization.integration.container.PostgreSqlTestContainer;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -27,6 +29,7 @@ class AuthorizationControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void login_shouldReturn200_whenCalledLoginEndpointWithValidBody() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN);
@@ -39,6 +42,20 @@ class AuthorizationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
+    void login_shouldReturn403_whenCalledLoginEndpointWithoutPersonsReadScope() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.post(TestUrls.LOGIN_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void login_shouldReturn404_whenCalledLoginEndpointWithClientIdThatNotExist() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN_WITH_WRONG_CLIENT_ID);
@@ -55,6 +72,7 @@ class AuthorizationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void login_shouldReturn400_whenCalledLoginEndpointWithClientIdThatNotValid() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN_WITH_CLIENT_ID_THAT_NOT_VALID);
@@ -71,6 +89,7 @@ class AuthorizationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void login_shouldReturn404_whenCalledLoginEndpointWithEmailThatNotExist() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN_WITH_WRONG_EMAIL);
@@ -87,6 +106,7 @@ class AuthorizationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void login_shouldReturn400_whenCalledLoginEndpointWithEmailThatNotValid() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN_WITH_EMAIL_THAT_NOT_VALID);
@@ -103,6 +123,7 @@ class AuthorizationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void login_shouldReturn400_whenCalledLoginEndpointWithIncorrectPassword() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN_WITH_INCORRECT_PASSWORD);
@@ -119,6 +140,7 @@ class AuthorizationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void login_shouldReturn400_whenCalledLoginEndpointWithPasswordThatNotValid() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN_WITH_PASSWORD_THAT_NOT_VALID);
@@ -135,6 +157,7 @@ class AuthorizationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void login_shouldReturn400_whenCalledLoginEndpointWithNullRedirectUri() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN_WITH_NULL_REDIRECT_URI);
@@ -151,6 +174,7 @@ class AuthorizationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void login_shouldReturn400_whenCalledLoginEndpointWithIncorrectScopeValue() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_LOGIN_WITH_INCORRECT_SCOPE_VALUE);

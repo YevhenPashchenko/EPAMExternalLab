@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 
 import java.util.List;
 import java.util.Objects;
@@ -36,9 +37,10 @@ class JpaRegisteredClientRepositoryServiceTest {
     @SuppressWarnings("unchecked")
     private final PagedResourcesAssembler<Client> pagedResourcesAssembler = mock(PagedResourcesAssembler.class);
     private final EntityDtoMapper entityDtoMapper = mock(EntityDtoMapper.class);
+    private final AuthorizationServerSettings authorizationServerSettings = AuthorizationServerSettings.builder().build();
     private final JpaRegisteredClientRepositoryService jpaRegisteredClientRepositoryService =
         new JpaRegisteredClientRepositoryService(clientRepository, clientDtoAssembler, pagedResourcesAssembler,
-            entityDtoMapper);
+            entityDtoMapper, authorizationServerSettings);
 
     @Test
     void save_shouldCallsClientRepositorySave_whenExecutedNormally() {

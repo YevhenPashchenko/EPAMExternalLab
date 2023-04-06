@@ -1,0 +1,8 @@
+{
+  "tag-name": "tagName1",
+  "part-name": "nam%",
+  "part-description": "desc%",
+  "sort-by": {
+    "name": "desc"
+  }
+}

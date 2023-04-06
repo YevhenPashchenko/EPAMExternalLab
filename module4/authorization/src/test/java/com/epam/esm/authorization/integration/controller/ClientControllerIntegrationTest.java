@@ -1,6 +1,7 @@
 package com.epam.esm.authorization.integration.controller;
 
 import com.epam.esm.authorization.AuthorizationApplication;
+import com.epam.esm.authorization.constant.Authorities;
 import com.epam.esm.authorization.integration.constant.TestFilePaths;
 import com.epam.esm.authorization.integration.constant.TestUrls;
 import com.epam.esm.authorization.integration.container.PostgreSqlTestContainer;
@@ -39,7 +40,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void create_shouldReturn200_whenCalledCreateEndpointWithValidBody() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_CLIENT);
@@ -53,8 +54,8 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"user"})
-    void create_shouldReturn403_whenCalledCreateEndpointWithRoleUser() throws Exception {
+    @WithMockUser
+    void create_shouldReturn403_whenCalledCreateEndpointWithoutAdminRole() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_CLIENT);
 
@@ -67,7 +68,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void create_shouldReturn400_whenCalledCreateEndpointWithClientIdThatNotValid() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_CLIENT_WITH_CLIENT_ID_THAT_NOT_VALID);
@@ -86,7 +87,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void create_shouldReturn400_whenCalledCreateEndpointWithClientIdThatAlreadyExist() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_CLIENT);
@@ -107,7 +108,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void create_shouldReturn400_whenCalledCreateEndpointWithClientSecretThatNotValid() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_CLIENT_WITH_CLIENT_SECRET_THAT_NOT_VALID);
@@ -126,7 +127,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void create_shouldReturn400_whenCalledCreateEndpointWithScopesThatIsNull() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_CLIENT_WITH_SCOPES_THAT_IS_NULL);
@@ -145,7 +146,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.CLIENTS_READ})
     void getAll_shouldReturnPageOfClients_whenCalledGetAllEndpointWithValidPagination() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -166,7 +167,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void getAll_shouldReturn403_whenCalledGetAllEndpointWithoutClientsReadScope() throws Exception {
         // THEN
         mockMvc.perform(
@@ -175,7 +176,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.read"})
+    @WithMockUser(authorities = {Authorities.CLIENTS_READ})
     void getAll_shouldReturn403_whenCalledGetAllEndpointWithoutAdminRole() throws Exception {
         // THEN
         mockMvc.perform(
@@ -184,7 +185,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.CLIENTS_READ})
     void getAll_shouldReturn400_whenCalledGetAllEndpointWithNotValidPageOfPagination() throws Exception {
         // THEN
         mockMvc.perform(
@@ -197,7 +198,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.CLIENTS_READ})
     void getAll_shouldReturn400_whenCalledGetAllEndpointWithNotValidSizeOfPagination() throws Exception {
         // THEN
         mockMvc.perform(
@@ -210,7 +211,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.CLIENTS_READ})
     void getByClientId_shouldReturnClient_whenCalledGetByClientIdEndpointWithClientIdThatExist() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -230,7 +231,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void getByClientId_shouldReturn403_whenCalledGetByClientIdEndpointWithoutClientsReadScope() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -242,7 +243,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.read"})
+    @WithMockUser(authorities = {Authorities.CLIENTS_READ})
     void getByClientId_shouldReturn403_whenCalledGetByClientIdEndpointWithoutAdminRole() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -254,7 +255,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.CLIENTS_READ})
     void getByClientId_shouldReturn404_whenCalledGetByClientIdEndpointWithClientIdThatNotExist() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -270,7 +271,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.CLIENTS_WRITE})
     void update_shouldReturnUpdatedClient_whenCalledUpdateEndpointWithClientIdThatExist() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -293,7 +294,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void update_shouldReturn403_whenCalledUpdateEndpointWithoutClientsWriteScope() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -307,7 +308,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.write"})
+    @WithMockUser(authorities = {Authorities.CLIENTS_WRITE})
     void update_shouldReturn403_whenCalledUpdateEndpointWithoutAdminRole() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -321,7 +322,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.CLIENTS_WRITE})
     void update_shouldReturn404_whenCalledUpdateEndpointWithClientIdThatNotExist() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -339,7 +340,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.CLIENTS_WRITE})
     void delete_shouldReturnClient_whenCalledDeleteEndpointWithClientIdThatExist() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -359,7 +360,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void delete_shouldReturn403_whenCalledDeleteEndpointWithoutClientsWriteScope() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -371,7 +372,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.write"})
+    @WithMockUser(authorities = {Authorities.CLIENTS_WRITE})
     void delete_shouldReturn403_whenCalledDeleteEndpointWithoutAdminRole() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();
@@ -383,7 +384,7 @@ class ClientControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_clients.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.CLIENTS_WRITE})
     void delete_shouldReturn404_whenCalledDeleteEndpointWithClientIdThatNotExist() throws Exception {
         // GIVEN
         var client = TestEntityFactory.createDefaultClient();

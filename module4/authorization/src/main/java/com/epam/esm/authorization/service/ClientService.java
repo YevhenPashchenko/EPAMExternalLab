@@ -5,6 +5,7 @@ import com.epam.esm.authorization.dto.UpdateClientDto;
 import com.epam.esm.authorization.entity.Client;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 
 /**
@@ -13,6 +14,13 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
  * @author Yevhen Pashchenko
  */
 public interface ClientService extends RegisteredClientRepository {
+
+    /**
+     * Create a {@link RegisteredClient} object.
+     *
+     * @param client {@link ClientDto} object.
+     */
+    void create(ClientDto client);
 
     /**
      * Returns a list of {@link ClientDto} objects from given {@code page} and {@code size}.
@@ -35,13 +43,14 @@ public interface ClientService extends RegisteredClientRepository {
      * Updates an {@link Client} object and returns it.
      *
      * @param clientId {@code clientId}.
-     * @param client {@link UpdateClientDto} object.
+     * @param client   {@link UpdateClientDto} object.
      * @return {@link ClientDto} object.
      */
     EntityModel<ClientDto> update(String clientId, UpdateClientDto client);
 
     /**
      * Deletes an {@link Client} object and returns it.
+     *
      * @param clientId {@code clientId}.
      * @return {@link ClientDto} object.
      */

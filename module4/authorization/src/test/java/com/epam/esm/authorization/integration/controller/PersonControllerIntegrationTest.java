@@ -1,6 +1,7 @@
 package com.epam.esm.authorization.integration.controller;
 
 import com.epam.esm.authorization.AuthorizationApplication;
+import com.epam.esm.authorization.constant.Authorities;
 import com.epam.esm.authorization.integration.constant.TestFilePaths;
 import com.epam.esm.authorization.integration.constant.TestUrls;
 import com.epam.esm.authorization.integration.container.PostgreSqlTestContainer;
@@ -44,6 +45,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_WRITE})
     void create_shouldReturn200_whenCalledCreateEndpointWithValidBody() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_PERSON);
@@ -64,6 +66,20 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
+    void create_shouldReturn403_whenCalledCreateEndpointWithoutPersonsWriteScope() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_PERSON);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.post(TestUrls.PERSONS_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_WRITE})
     void create_shouldReturn400_whenCalledCreateEndpointWithNotValidEmail() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_PERSON_WITH_NOT_VALID_EMAIL);
@@ -82,6 +98,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.PERSONS_WRITE})
     void create_shouldReturn400_whenCalledCreateEndpointWithNotValidPassword() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_PERSON_WITH_NOT_VALID_PASSWORD);
@@ -100,7 +117,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_READ})
     void getAll_shouldReturnPageOfPersons_whenCalledGetAllEndpointWithValidPagination() throws Exception {
         // GIVEN
         var person = TestEntityFactory.createDefaultPerson();
@@ -122,7 +139,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void getAll_shouldReturn403_whenCalledGetAllEndpointWithoutPersonsReadScope() throws Exception {
         // THEN
         mockMvc.perform(
@@ -133,7 +150,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.read"})
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void getAll_shouldReturn403_whenCalledGetAllEndpointWithoutAdminRole() throws Exception {
         // THEN
         mockMvc.perform(
@@ -144,7 +161,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_READ})
     void getAll_shouldReturn400_whenCalledGetAllEndpointWithNotValidPageOfPagination() throws Exception {
         // THEN
         mockMvc.perform(
@@ -160,7 +177,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_READ})
     void getAll_shouldReturn400_whenCalledGetAllEndpointWithNotValidSizeOfPagination() throws Exception {
         // THEN
         mockMvc.perform(
@@ -176,7 +193,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_READ})
     void getByEmail_shouldReturnPerson_whenCalledGetByEmailEndpointWithEmailThatExist() throws Exception {
         // GIVEN
         var person = TestEntityFactory.createDefaultPerson();
@@ -199,7 +216,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void getByEmail_shouldReturn403_whenCalledGetByEmailEndpointWithoutPersonsReadScope() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_PERSON_EMAIL);
@@ -215,7 +232,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.read"})
+    @WithMockUser(authorities = {Authorities.PERSONS_READ})
     void getByEmail_shouldReturn403_whenCalledGetByEmailEndpointWithoutAdminRole() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_PERSON_EMAIL);
@@ -231,7 +248,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_READ})
     void getByEmail_shouldReturn400_whenCalledGetByEmailEndpointWithNotValidEmail() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_PERSON_EMAIL_WITH_NOT_VALID_EMAIL);
@@ -251,7 +268,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.read", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_READ})
     void getByEmail_shouldReturn404_whenCalledGetByEmailEndpointWithEmailThatNotExist() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_PERSON_EMAIL);
@@ -273,7 +290,7 @@ class PersonControllerIntegrationTest {
 
     @Test
     @Transactional
-    @WithMockUser(authorities = {"SCOPE_persons.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
     void update_shouldReturn200_whenCalledUpdateEndpointWithEmailThatExist() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON);
@@ -296,7 +313,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void update_shouldReturn403_whenCalledUpdateEndpointWithoutPersonsWriteScope() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON);
@@ -312,7 +329,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.write"})
+    @WithMockUser(authorities = {Authorities.PERSONS_WRITE})
     void update_shouldReturn403_whenCalledUpdateEndpointWithoutAdminRole() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON);
@@ -328,7 +345,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
     void update_shouldReturn400_whenCalledUpdateEndpointWithNotValidEmail() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON_WITH_NOT_VALID_EMAIL);
@@ -348,7 +365,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
     void update_shouldReturn400_whenCalledUpdateEndpointWithEnabledIsNull() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON_WITH_ENABLED_IS_NULL);
@@ -368,7 +385,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
     void update_shouldReturn400_whenCalledUpdateEndpointWithAuthoritiesIsNull() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON_WITH_AUTHORITIES_IS_NULL);
@@ -388,7 +405,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
     void update_shouldReturn404_whenCalledUpdateEndpointWithEmailThatNotExist() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON);
@@ -409,7 +426,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@mail.com", authorities = {"SCOPE_persons.write"})
+    @WithMockUser(username = "user@mail.com", authorities = {Authorities.PERSONS_WRITE})
     void changePassword_shouldReturn200_whenCalledChangePasswordEndpointWithValidBody() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CHANGE_PERSON_PASSWORD);
@@ -433,8 +450,8 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@mail.com", authorities = {"SCOPE_persons.read"})
-    void changePassword_shouldReturn403_whenCalledChangePasswordEndpointWithoutPersonsReadScope() throws Exception {
+    @WithMockUser(username = "user@mail.com")
+    void changePassword_shouldReturn403_whenCalledChangePasswordEndpointWithoutPersonsWriteScope() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CHANGE_PERSON_PASSWORD);
 
@@ -448,7 +465,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@mail.com", authorities = {"SCOPE_persons.write"})
+    @WithMockUser(username = "user@mail.com", authorities = {Authorities.PERSONS_WRITE})
     void changePassword_shouldReturn400_whenCalledChangePasswordEndpointWithNotValidOldPassword() throws Exception {
         // GIVEN
         var jsonNode =
@@ -468,7 +485,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@mail.com", authorities = {"SCOPE_persons.write"})
+    @WithMockUser(username = "user@mail.com", authorities = {Authorities.PERSONS_WRITE})
     void changePassword_shouldReturn400_whenCalledChangePasswordEndpointWithNotValidNewPassword() throws Exception {
         // GIVEN
         var jsonNode =
@@ -488,7 +505,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "admin@mail.com", authorities = {"SCOPE_persons.write"})
+    @WithMockUser(username = "admin@mail.com", authorities = {Authorities.PERSONS_WRITE})
     void changePassword_shouldReturn404_whenCalledChangePasswordEndpointWithEmailThatNotExist() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CHANGE_PERSON_PASSWORD);
@@ -510,7 +527,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@mail.com", authorities = {"SCOPE_persons.write"})
+    @WithMockUser(username = "user@mail.com", authorities = {Authorities.PERSONS_WRITE})
     void changePassword_shouldReturn400_whenCalledChangePasswordEndpointWithIncorrectOldPassword() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CHANGE_PERSON_PASSWORD);
@@ -532,7 +549,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
     void delete_shouldReturn200_whenCalledDeleteEndpointWithEmailThatExist() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_PERSON_EMAIL);
@@ -548,7 +565,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
     void delete_shouldReturn403_whenCalledDeleteEndpointWithoutPersonsWriteScope() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_PERSON_EMAIL);
@@ -563,7 +580,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.write"})
+    @WithMockUser(authorities = {Authorities.PERSONS_WRITE})
     void delete_shouldReturn403_whenCalledDeleteEndpointWithoutAdminRole() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_PERSON_EMAIL);
@@ -578,7 +595,7 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"SCOPE_persons.write", "ROLE_admin"})
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
     void delete_shouldReturn400_whenCalledDeleteEndpointWithNotValidEmail() throws Exception {
         // GIVEN
         var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_PERSON_EMAIL_WITH_NOT_VALID_EMAIL);

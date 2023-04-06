@@ -21,40 +21,33 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class GlobalExtensionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorDto> handleEntityNotFoundException(EntityNotFoundException exception) {
-        var error = ErrorDto.builder().code(HttpStatus.NOT_FOUND.value()).message(exception.getMessage()).build();
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return getResponseEntity(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    private ResponseEntity<ErrorDto> getResponseEntity(HttpStatus httpStatus, String message) {
+        var error = ErrorDto.builder().code(httpStatus.value()).message(message).build();
+        return new ResponseEntity<>(error, httpStatus);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorDto> handleSQLException(DataIntegrityViolationException exception) {
         var message = exception.getMostSpecificCause().getLocalizedMessage();
-        var error = ErrorDto.builder()
-            .code(HttpStatus.BAD_REQUEST.value())
-            .message(message.substring(message.indexOf("(")).replaceAll("[()]", ""))
-            .build();
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return getResponseEntity(HttpStatus.BAD_REQUEST,
+            message.substring(message.indexOf("(")).replaceAll("[()]", ""));
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ErrorDto> handleEmptyResultDataAccessException(EmptyResultDataAccessException exception) {
-        var error = ErrorDto.builder()
-            .code(HttpStatus.BAD_REQUEST.value())
-            .message(exception.getMessage())
-            .build();
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return getResponseEntity(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException exception) {
-        var error = ErrorDto.builder()
-            .code(HttpStatus.BAD_REQUEST.value())
-            .message(exception.getMessage())
-            .build();
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return getResponseEntity(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @Override
@@ -71,44 +64,32 @@ public class GlobalExtensionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ErrorDto> handleUsernameNotFoundException(UsernameNotFoundException exception) {
-        var error = ErrorDto.builder()
-            .code(HttpStatus.NOT_FOUND.value())
-            .message(exception.getMessage())
-            .build();
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return getResponseEntity(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorDto> handleAccessDeniedException(AccessDeniedException exception) {
-        var error = ErrorDto.builder()
-            .code(HttpStatus.FORBIDDEN.value())
-            .message(exception.getMessage())
-            .build();
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+        return getResponseEntity(HttpStatus.FORBIDDEN, exception.getMessage());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorDto> handleBadCredentialException(BadCredentialsException exception) {
-        var error = ErrorDto.builder()
-            .code(HttpStatus.BAD_REQUEST.value())
-            .message(exception.getMessage())
-            .build();
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return getResponseEntity(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(OAuth2AuthorizationCodeRequestAuthenticationException.class)
     public ResponseEntity<ErrorDto> handleAuthorizationCodeRequestAuthenticationException(
         OAuth2AuthorizationCodeRequestAuthenticationException exception) {
-        var error = ErrorDto.builder()
-            .code(HttpStatus.BAD_REQUEST.value())
-            .message(exception.getMessage())
-            .build();
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return getResponseEntity(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorDto> handleIllegalArgumentException(IllegalArgumentException exception) {
-        var error = ErrorDto.builder().code(HttpStatus.BAD_REQUEST.value()).message(exception.getMessage()).build();
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return getResponseEntity(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDto> defaultExceptionHandler(Exception exception) {
+        return getResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
     }
 }

@@ -1,0 +1,1 @@
+Before running docker-compose.yml needs to build a jar file with Gradle bootJar command.

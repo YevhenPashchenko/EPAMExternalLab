@@ -29,9 +29,11 @@ public class PersonAuthority {
     @SequenceGenerator(name = SEQUENCE_NAME, sequenceName = SEQUENCE_NAME, allocationSize = 1)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "person_email", nullable = false, referencedColumnName = "email")
     private Person person;
+
     @Column(name = "authority", nullable = false)
     private String authority;
 
@@ -44,12 +46,11 @@ public class PersonAuthority {
             return false;
         }
         PersonAuthority that = (PersonAuthority) o;
-        return Objects.equals(id, that.id) && Objects.equals(person, that.person)
-            && Objects.equals(authority, that.authority);
+        return Objects.equals(id, that.id) && Objects.equals(authority, that.authority);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, person, authority);
+        return Objects.hash(id, authority);
     }
 }

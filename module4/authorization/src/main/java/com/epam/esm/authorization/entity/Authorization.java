@@ -84,32 +84,11 @@ public class Authorization {
         return Objects.equals(id, that.id) && Objects.equals(registeredClientId,
             that.registeredClientId) && Objects.equals(principalName, that.principalName)
             && Objects.equals(authorizationGrantType, that.authorizationGrantType) && Objects.equals(
-            authorizedScopes, that.authorizedScopes) && Objects.equals(attributes, that.attributes)
-            && Objects.equals(state, that.state) && Objects.equals(authorizationCodeValue,
-            that.authorizationCodeValue) && Objects.equals(authorizationCodeIssuedAt,
-            that.authorizationCodeIssuedAt) && Objects.equals(authorizationCodeExpiresAt,
-            that.authorizationCodeExpiresAt) && Objects.equals(authorizationCodeMetadata,
-            that.authorizationCodeMetadata) && Objects.equals(accessTokenValue, that.accessTokenValue)
-            && Objects.equals(accessTokenIssuedAt, that.accessTokenIssuedAt) && Objects.equals(
-            accessTokenExpiresAt, that.accessTokenExpiresAt) && Objects.equals(accessTokenMetadata,
-            that.accessTokenMetadata) && Objects.equals(accessTokenType, that.accessTokenType)
-            && Objects.equals(accessTokenScopes, that.accessTokenScopes) && Objects.equals(
-            refreshTokenValue, that.refreshTokenValue) && Objects.equals(refreshTokenIssuedAt,
-            that.refreshTokenIssuedAt) && Objects.equals(refreshTokenExpiresAt, that.refreshTokenExpiresAt)
-            && Objects.equals(refreshTokenMetadata, that.refreshTokenMetadata) && Objects.equals(
-            oidcIdTokenValue, that.oidcIdTokenValue) && Objects.equals(oidcIdTokenIssuedAt,
-            that.oidcIdTokenIssuedAt) && Objects.equals(oidcIdTokenExpiresAt, that.oidcIdTokenExpiresAt)
-            && Objects.equals(oidcIdTokenMetadata, that.oidcIdTokenMetadata) && Objects.equals(
-            oidcIdTokenClaims, that.oidcIdTokenClaims);
+            authorizedScopes, that.authorizedScopes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, registeredClientId, principalName, authorizationGrantType, authorizedScopes, attributes,
-            state, authorizationCodeValue, authorizationCodeIssuedAt, authorizationCodeExpiresAt,
-            authorizationCodeMetadata,
-            accessTokenValue, accessTokenIssuedAt, accessTokenExpiresAt, accessTokenMetadata, accessTokenType,
-            accessTokenScopes, refreshTokenValue, refreshTokenIssuedAt, refreshTokenExpiresAt, refreshTokenMetadata,
-            oidcIdTokenValue, oidcIdTokenIssuedAt, oidcIdTokenExpiresAt, oidcIdTokenMetadata, oidcIdTokenClaims);
+        return Objects.hash(id, registeredClientId, principalName, authorizationGrantType, authorizedScopes);
     }
 }

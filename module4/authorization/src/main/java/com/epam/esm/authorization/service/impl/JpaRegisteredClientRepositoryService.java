@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ConfigurationSettingNames;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
@@ -32,6 +33,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class JpaRegisteredClientRepositoryService implements ClientService {
@@ -41,19 +43,34 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
     private final PagedResourcesAssembler<Client> pagedResourcesAssembler;
     private final EntityDtoMapper entityDtoMapper;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AuthorizationServerSettings authorizationServerSettings;
 
     public JpaRegisteredClientRepositoryService(ClientRepository clientRepository,
         ClientDtoAssembler clientDtoAssembler, PagedResourcesAssembler<Client> pagedResourcesAssembler,
-        EntityDtoMapper entityDtoMapper) {
+        EntityDtoMapper entityDtoMapper, AuthorizationServerSettings authorizationServerSettings) {
         this.clientRepository = clientRepository;
         this.clientDtoAssembler = clientDtoAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.entityDtoMapper = entityDtoMapper;
+        this.authorizationServerSettings = authorizationServerSettings;
 
         var classLoader = JpaRegisteredClientRepositoryService.class.getClassLoader();
         var securityModules = SecurityJackson2Modules.getModules(classLoader);
         this.objectMapper.registerModules(securityModules);
         this.objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());
+    }
+
+    @Override
+    public void create(ClientDto client) {
+        save(RegisteredClient.withId(UUID.randomUUID().toString())
+            .clientId(client.getClientId())
+            .clientSecret("{noop}" + client.getClientSecret())
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+            .redirectUri(authorizationServerSettings.getIssuer() + "/login")
+            .scopes(scopes -> scopes.addAll(client.getScopes()))
+            .build());
     }
 
     @Override
@@ -184,7 +201,7 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
 
     private Map<String, Object> parseMap(String data) {
         try {
-            return objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {
+            return objectMapper.readValue(data, new TypeReference<>() {
             });
         } catch (Exception exception) {
             throw new IllegalArgumentException(exception.getMessage(), exception);

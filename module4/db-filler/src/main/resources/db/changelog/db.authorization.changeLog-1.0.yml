@@ -1,0 +1,78 @@
+databaseChangeLog:
+  - changeSet:
+      id: create client table, add default client
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: client
+            columns:
+              - column:
+                  name: id
+                  type: varchar(100)
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: client_id_pkey
+                    nullable: false
+              - column:
+                  name: client_id
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client_id_issued_at
+                  type: timestamp without time zone
+                  defaultValueComputed: current_timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client_secret
+                  type: varchar(200)
+              - column:
+                  name: client_secret_expires_at
+                  type: timestamp without time zone
+              - column:
+                  name: client_name
+                  type: varchar(200)
+              - column:
+                  name: client_authentication_methods
+                  type: varchar(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: authorization_grant_types
+                  type: varchar(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: redirect_uris
+                  type: varchar(1000)
+              - column:
+                  name: scopes
+                  type: varchar(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client_settings
+                  type: varchar(2000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: token_settings
+                  type: varchar(2000)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: client_id
+            constraintName: client_client_id_unique
+            tableName: client
+        - addUniqueConstraint:
+            columnNames: client_secret
+            constraintName: client_client_secret_unique
+            tableName: client
+        - sql:
+            sql:
+              insert into client values('04f48565-6714-4c18-a3d6-85d6cbce290c', 'base-client', now(),
+              '{noop}base-client-secret', null, '04f48565-6714-4c18-a3d6-85d6cbce290c', 'client_secret_basic',
+              'refresh_token,authorization_code', 'http://127.0.0.1:9000/login', 'clients.read,clients.write',
+              '{"@class":"java.util.Collections$UnmodifiableMap","settings.client.require-proof-key":false,"settings.client.require-authorization-consent":false}',
+              '{"@class":"java.util.Collections$UnmodifiableMap","settings.token.reuse-refresh-tokens":true,"settings.token.id-token-signature-algorithm":["org.springframework.security.oauth2.jose.jws.SignatureAlgorithm","RS256"],"settings.token.access-token-time-to-live":["java.time.Duration",300.000000000],"settings.token.access-token-format":{"@class":"org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat","value":"self-contained"},"settings.token.refresh-token-time-to-live":["java.time.Duration",3600.000000000],"settings.token.authorization-code-time-to-live":["java.time.Duration",300.000000000]}')

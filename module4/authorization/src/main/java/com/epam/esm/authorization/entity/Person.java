@@ -26,9 +26,9 @@ public class Person {
     @SequenceGenerator(name = SEQUENCE_NAME, sequenceName = SEQUENCE_NAME, allocationSize = 1)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
-    @Column(name = "password", unique = true, nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "enabled", nullable = false)
     private Boolean enabled;
@@ -54,12 +54,11 @@ public class Person {
             return false;
         }
         Person person = (Person) o;
-        return id.equals(person.id) && email.equals(person.email) && password.equals(person.password) && enabled.equals(
-            person.enabled);
+        return Objects.equals(id, person.id) && Objects.equals(email, person.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, password, enabled);
+        return Objects.hash(id, email);
     }
 }

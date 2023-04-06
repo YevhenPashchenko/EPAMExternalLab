@@ -1,5 +1,6 @@
 package com.epam.esm.authorization.controller;
 
+import com.epam.esm.authorization.constant.Authorities;
 import com.epam.esm.authorization.dto.ChangePersonPasswordDto;
 import com.epam.esm.authorization.dto.PersonEmailDto;
 import com.epam.esm.authorization.dto.CreatePersonDto;
@@ -32,6 +33,7 @@ public class PersonController {
 
     private final PersonService personService;
 
+    @PreAuthorize("hasAuthority(\"" + Authorities.PERSONS_WRITE + "\")")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public void create(@Valid @RequestBody CreatePersonDto person) {
         personService.createUser(
@@ -43,7 +45,7 @@ public class PersonController {
         );
     }
 
-    @PreAuthorize("hasRole('ROLE_admin') && hasAuthority('SCOPE_persons.read')")
+    @PreAuthorize("hasRole(\"" + Authorities.ADMIN_ROLE + "\") && hasAuthority(\"" + Authorities.PERSONS_READ + "\")")
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public PagedModel<PersonDto> getAll(
         @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be not less 0") int page,
@@ -51,14 +53,14 @@ public class PersonController {
         return personService.getAllUsers(page, size);
     }
 
-    @PreAuthorize("hasRole('ROLE_admin') && hasAuthority('SCOPE_persons.read')")
+    @PreAuthorize("hasRole(\"" + Authorities.ADMIN_ROLE + "\") && hasAuthority(\"" + Authorities.PERSONS_READ + "\")")
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public EntityModel<PersonDto> getByEmail(@Valid @RequestBody PersonEmailDto person) {
         return personService.getUserByEmail(person.getEmail());
     }
 
     @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('ROLE_admin') && hasAuthority('SCOPE_persons.write')")
+    @PreAuthorize("hasRole(\"" + Authorities.ADMIN_ROLE + "\") && hasAuthority(\"" + Authorities.PERSONS_WRITE + "\")")
     public void update(@Valid @RequestBody PersonDto person) {
         personService.updateUser(
             User.withUsername(person.getEmail())
@@ -69,14 +71,14 @@ public class PersonController {
         );
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_persons.write')")
+    @PreAuthorize("hasAuthority(\"" + Authorities.PERSONS_WRITE + "\")")
     @PatchMapping(value = "/change", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void changePassword(@Valid @RequestBody ChangePersonPasswordDto password) {
         personService.changePassword(password.getOldPassword(), password.getNewPassword());
     }
 
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('ROLE_admin') && hasAuthority('SCOPE_persons.write')")
+    @PreAuthorize("hasRole(\"" + Authorities.ADMIN_ROLE + "\") && hasAuthority(\"" + Authorities.PERSONS_WRITE + "\")")
     public void delete(@Valid @RequestBody PersonEmailDto person) {
         personService.deleteUser(person.getEmail());
     }
