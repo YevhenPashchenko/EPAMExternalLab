@@ -2,11 +2,15 @@ package com.epam.esm.authorization.service.impl;
 
 import com.epam.esm.authorization.assembler.ClientDtoAssembler;
 import com.epam.esm.authorization.dto.ClientDto;
+import com.epam.esm.authorization.dto.ClientScopeDto;
 import com.epam.esm.authorization.dto.UpdateClientDto;
+import com.epam.esm.authorization.dto.UpdateClientScopeDto;
 import com.epam.esm.authorization.entity.Client;
+import com.epam.esm.authorization.entity.ClientScope;
 import com.epam.esm.authorization.handler.exception.EntityNotFoundException;
 import com.epam.esm.authorization.mapper.EntityDtoMapper;
 import com.epam.esm.authorization.repository.ClientRepository;
+import com.epam.esm.authorization.service.AuthoritiesService;
 import com.epam.esm.authorization.service.ClientService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,9 +35,11 @@ import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class JpaRegisteredClientRepositoryService implements ClientService {
@@ -41,16 +47,19 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
     private final ClientRepository clientRepository;
     private final ClientDtoAssembler clientDtoAssembler;
     private final PagedResourcesAssembler<Client> pagedResourcesAssembler;
+    private final AuthoritiesService authoritiesService;
     private final EntityDtoMapper entityDtoMapper;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AuthorizationServerSettings authorizationServerSettings;
 
     public JpaRegisteredClientRepositoryService(ClientRepository clientRepository,
         ClientDtoAssembler clientDtoAssembler, PagedResourcesAssembler<Client> pagedResourcesAssembler,
-        EntityDtoMapper entityDtoMapper, AuthorizationServerSettings authorizationServerSettings) {
+        AuthoritiesService authoritiesService, EntityDtoMapper entityDtoMapper,
+        AuthorizationServerSettings authorizationServerSettings) {
         this.clientRepository = clientRepository;
         this.clientDtoAssembler = clientDtoAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.authoritiesService = authoritiesService;
         this.entityDtoMapper = entityDtoMapper;
         this.authorizationServerSettings = authorizationServerSettings;
 
@@ -62,6 +71,7 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
 
     @Override
     public void create(ClientDto client) {
+        isScopeExist(client.getScopes());
         save(RegisteredClient.withId(UUID.randomUUID().toString())
             .clientId(client.getClientId())
             .clientSecret("{noop}" + client.getClientSecret())
@@ -71,6 +81,21 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
             .redirectUri(authorizationServerSettings.getIssuer() + "/login")
             .scopes(scopes -> scopes.addAll(client.getScopes()))
             .build());
+    }
+
+    private void isScopeExist(Set<String> scopes) {
+        var allScopes = authoritiesService.getAllScopes();
+        scopes.forEach(scope -> {
+            if (!allScopes.contains(scope)) {
+                throw new EntityNotFoundException("Scope " + scope + " not found");
+            }
+        });
+    }
+
+    @Override
+    public ClientScopeDto createScope(ClientScopeDto clientScope) {
+        authoritiesService.addScope(clientScope.getScope());
+        return clientScope;
     }
 
     @Override
@@ -91,7 +116,11 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
             getClientAuthenticationMethods(registeredClient.getClientAuthenticationMethods()));
         entity.setAuthorizationGrantTypes(getAuthorizationGrantTypes(registeredClient.getAuthorizationGrantTypes()));
         entity.setRedirectUris(StringUtils.collectionToCommaDelimitedString(registeredClient.getRedirectUris()));
-        entity.setScopes(StringUtils.collectionToCommaDelimitedString(registeredClient.getScopes()));
+        registeredClient.getScopes().forEach(scope -> {
+            var clientScope = new ClientScope();
+            clientScope.setScope(scope);
+            entity.addClientScope(clientScope);
+        });
         entity.setClientSettings(writeMap(registeredClient.getClientSettings().getSettings()));
         entity.setTokenSettings(writeMap(registeredClient.getTokenSettings().getSettings()));
 
@@ -141,6 +170,15 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
     }
 
     @Override
+    public List<ClientScopeDto> getAllScopes() {
+        return authoritiesService.getAllScopes().stream().map(scope -> {
+            var clientScope = new ClientScopeDto();
+            clientScope.setScope(scope);
+            return clientScope;
+        }).toList();
+    }
+
+    @Override
     public RegisteredClient findById(String id) {
         Assert.hasText(id, "id cannot be empty");
         return clientRepository.findById(id).map(this::toRegisteredClient)
@@ -148,6 +186,7 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
     }
 
     @Override
+    @Transactional
     public RegisteredClient findByClientId(String clientId) {
         Assert.hasText(clientId, "clientId cannot be empty");
         return clientRepository.findByClientId(clientId)
@@ -171,7 +210,8 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
                     .forEach(grantType -> authorizationGrantTypes.add(resolveAuthorizationGrantType(grantType))))
             .redirectUris(
                 uris -> uris.addAll(StringUtils.commaDelimitedListToSet(client.getRedirectUris())))
-            .scopes(scopes -> scopes.addAll(StringUtils.commaDelimitedListToSet(client.getScopes())))
+            .scopes(scopes -> scopes.addAll(client.getClientScopes().stream().map(ClientScope::getScope).collect(
+                Collectors.toSet())))
             .clientSettings(ClientSettings.withSettings(parseMap(client.getClientSettings())).build())
             .tokenSettings(getTokenSettings(client.getTokenSettings()))
             .build();
@@ -201,7 +241,7 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
 
     private Map<String, Object> parseMap(String data) {
         try {
-            return objectMapper.readValue(data, new TypeReference<>() {
+            return objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {
             });
         } catch (Exception exception) {
             throw new IllegalArgumentException(exception.getMessage(), exception);
@@ -220,10 +260,28 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
     @Override
     @Transactional
     public EntityModel<ClientDto> update(String clientId, UpdateClientDto updateClient) {
+        isScopeExist(updateClient.getScopes());
         var client = clientRepository.findByClientId(clientId)
             .orElseThrow(() -> new EntityNotFoundException(setErrorMessage(clientId)));
+        client.getClientScopes().forEach(client::removeClientScope);
+        updateClient.getScopes().forEach(scope -> {
+            var clientScope = new ClientScope();
+            clientScope.setScope(scope);
+            client.addClientScope(clientScope);
+        });
+        clientRepository.saveAndFlush(client);
         entityDtoMapper.updateClient(client, updateClient);
         return EntityModel.of(clientDtoAssembler.toModel(client));
+    }
+
+    @Override
+    @Transactional
+    public ClientScopeDto updateScope(UpdateClientScopeDto updateClientScope) {
+        isScopeExist(Set.of(updateClientScope.getOldScope()));
+        authoritiesService.updateScope(updateClientScope.getOldScope(), updateClientScope.getNewScope());
+        var clientScope = new ClientScopeDto();
+        clientScope.setScope(updateClientScope.getNewScope());
+        return clientScope;
     }
 
     @Override
@@ -234,5 +292,13 @@ public class JpaRegisteredClientRepositoryService implements ClientService {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(setErrorMessage(clientId)))));
+    }
+
+    @Override
+    @Transactional
+    public ClientScopeDto deleteScope(ClientScopeDto clientScope) {
+        isScopeExist(Set.of(clientScope.getScope()));
+        authoritiesService.deleteScope(clientScope.getScope());
+        return clientScope;
     }
 }

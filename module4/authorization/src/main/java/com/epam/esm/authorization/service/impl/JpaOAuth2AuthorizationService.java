@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -187,7 +188,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
 
     private Map<String, Object> parseMap(String data) {
         try {
-            return objectMapper.readValue(data, new TypeReference<>() {
+            return objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {
             });
         } catch (Exception exception) {
             throw new IllegalArgumentException(exception.getMessage(), exception);
@@ -195,6 +196,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
     }
 
     @Override
+    @Transactional
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
         Assert.hasText(token, "token cannot be empty");
 

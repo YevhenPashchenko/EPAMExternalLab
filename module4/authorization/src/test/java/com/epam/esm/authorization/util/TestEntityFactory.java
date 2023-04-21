@@ -2,11 +2,16 @@ package com.epam.esm.authorization.util;
 
 import com.epam.esm.authorization.dto.ChangePersonPasswordDto;
 import com.epam.esm.authorization.dto.ClientDto;
+import com.epam.esm.authorization.dto.ClientScopeDto;
 import com.epam.esm.authorization.dto.LoginDto;
 import com.epam.esm.authorization.dto.PersonDto;
+import com.epam.esm.authorization.dto.PersonRoleDto;
 import com.epam.esm.authorization.dto.UpdateClientDto;
+import com.epam.esm.authorization.dto.UpdateClientScopeDto;
+import com.epam.esm.authorization.dto.UpdatePersonRoleDto;
 import com.epam.esm.authorization.entity.Authorization;
 import com.epam.esm.authorization.entity.Client;
+import com.epam.esm.authorization.entity.ClientScope;
 import com.epam.esm.authorization.entity.Person;
 import com.epam.esm.authorization.entity.PersonAuthority;
 import lombok.experimental.UtilityClass;
@@ -26,21 +31,22 @@ public class TestEntityFactory {
     private static final String PASSWORD = "password";
     private static final String NEW_PASSWORD = "pass";
     private static final Boolean ENABLED = true;
-    private static final String AUTHORITY_VALUE = "user";
-    private static final String UPDATE_AUTHORITY_VALUE = "ROLE_admin";
+    private static final String ROLE_VALUE = "ROLE_user";
+    private static final String UPDATE_ROLE_VALUE = "ROLE_admin";
     private static final String CLIENT_ID = "id";
     private static final String CLIENT_CLIENT_ID = "client";
     private static final String UPDATE_CLIENT_ID = "update-client";
     private static final String CLIENT_SECRET = "client-secret";
     private static final String UPDATE_CLIENT_SECRET = "update-client-secret";
     private static final String CLIENT_GRANT_TYPES = "refresh_token,authorization_code";
-    private static final String CLIENT_SCOPES = "clients.read";
-    private static final String UPDATE_CLIENT_SCOPES = "clients.write";
+    private static final String CLIENT_SCOPE = "clients.read";
+    private static final String PERSON_SCOPE = "persons.read";
+    private static final String UPDATE_CLIENT_SCOPE = "clients.write";
     private static final String CLIENT_SETTINGS =
         "{\"@class\":\"java.util.Collections$UnmodifiableMap\",\"settings.client.require-proof-key\":false}";
     private static final String TOKEN_SETTINGS =
         "{\"@class\":\"java.util.Collections$UnmodifiableMap\",\"settings.token.reuse-refresh-tokens\":true}";
-    private static final String REDIRECT_URI = "http://127.0.0.1:9000";
+    private static final String REDIRECT_URI = "http://127.0.0.1:9000/login";
     private static final String PRINCIPAL_NAME = "principalName";
     private static final String ATTRIBUTE = "{\"@class\":\"java.util.Collections$UnmodifiableMap\"}";
 
@@ -50,7 +56,7 @@ public class TestEntityFactory {
         login.setEmail(EMAIL);
         login.setPassword(PASSWORD);
         login.setRedirectUri(REDIRECT_URI);
-        login.setScopes(Set.of(CLIENT_SCOPES));
+        login.setScopes(Set.of(CLIENT_SCOPE));
         return login;
     }
 
@@ -66,7 +72,8 @@ public class TestEntityFactory {
             .clientId(CLIENT_CLIENT_ID)
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .redirectUri(REDIRECT_URI)
-            .scope(CLIENT_SCOPES)
+            .scope(CLIENT_SCOPE)
+            .scope(PERSON_SCOPE)
             .build();
     }
 
@@ -88,7 +95,9 @@ public class TestEntityFactory {
         client.setClientAuthenticationMethods("authorization_code");
         client.setAuthorizationGrantTypes(CLIENT_GRANT_TYPES);
         client.setRedirectUris(REDIRECT_URI);
-        client.setScopes(CLIENT_SCOPES);
+        var clientScope = new ClientScope();
+        clientScope.setScope(CLIENT_SCOPE);
+        client.addClientScope(clientScope);
         client.setClientSettings(CLIENT_SETTINGS);
         client.setTokenSettings(TOKEN_SETTINGS);
         return client;
@@ -98,7 +107,7 @@ public class TestEntityFactory {
         var client = new ClientDto();
         client.setClientId(CLIENT_CLIENT_ID);
         client.setClientSecret(CLIENT_SECRET);
-        client.setScopes(Set.of(CLIENT_SCOPES));
+        client.setScopes(Set.of(CLIENT_SCOPE));
         return client;
     }
 
@@ -106,8 +115,21 @@ public class TestEntityFactory {
         var client = new UpdateClientDto();
         client.setClientId(UPDATE_CLIENT_ID);
         client.setClientSecret(UPDATE_CLIENT_SECRET);
-        client.setScopes(Set.of(UPDATE_CLIENT_SCOPES));
+        client.setScopes(Set.of(UPDATE_CLIENT_SCOPE));
         return client;
+    }
+
+    public ClientScopeDto createDefaultClientScopeDto() {
+        var scope = new ClientScopeDto();
+        scope.setScope(CLIENT_SCOPE);
+        return scope;
+    }
+
+    public UpdateClientScopeDto createDefaultUpdateClientScopeDto() {
+        var scope = new UpdateClientScopeDto();
+        scope.setOldScope(CLIENT_SCOPE);
+        scope.setNewScope(UPDATE_CLIENT_SCOPE);
+        return scope;
     }
 
     public Person createDefaultPerson() {
@@ -117,7 +139,7 @@ public class TestEntityFactory {
         person.setEnabled(ENABLED);
 
         var personAuthority = new PersonAuthority();
-        personAuthority.setAuthority(AUTHORITY_VALUE);
+        personAuthority.setAuthority(ROLE_VALUE);
         person.addPersonAuthority(personAuthority);
 
         return person;
@@ -127,7 +149,7 @@ public class TestEntityFactory {
         var person = new PersonDto();
         person.setEmail(EMAIL);
         person.setEnabled(!ENABLED);
-        person.setAuthorities(Set.of(UPDATE_AUTHORITY_VALUE));
+        person.setAuthorities(Set.of(UPDATE_ROLE_VALUE));
         return person;
     }
 
@@ -135,7 +157,7 @@ public class TestEntityFactory {
         return User.withUsername(EMAIL)
             .password(PASSWORD)
             .disabled(!ENABLED)
-            .authorities(AUTHORITY_VALUE)
+            .authorities(ROLE_VALUE)
             .build();
     }
 
@@ -143,7 +165,7 @@ public class TestEntityFactory {
         var person = new PersonDto();
         person.setEmail(EMAIL);
         person.setEnabled(ENABLED);
-        person.setAuthorities(Set.of(AUTHORITY_VALUE));
+        person.setAuthorities(Set.of(ROLE_VALUE));
         return person;
     }
 
@@ -152,5 +174,18 @@ public class TestEntityFactory {
         personPassword.setOldPassword(PASSWORD);
         personPassword.setNewPassword(NEW_PASSWORD);
         return personPassword;
+    }
+
+    public PersonRoleDto createDefaultPersonRoleDto() {
+        var role = new PersonRoleDto();
+        role.setRole(ROLE_VALUE);
+        return role;
+    }
+
+    public UpdatePersonRoleDto createDefaultUpdatePersonRoleDto() {
+        var role = new UpdatePersonRoleDto();
+        role.setOldRole(ROLE_VALUE);
+        role.setNewRole(UPDATE_ROLE_VALUE);
+        return role;
     }
 }

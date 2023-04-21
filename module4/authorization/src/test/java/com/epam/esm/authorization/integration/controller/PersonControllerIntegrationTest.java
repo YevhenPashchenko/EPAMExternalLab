@@ -1,12 +1,16 @@
 package com.epam.esm.authorization.integration.controller;
 
 import com.epam.esm.authorization.AuthorizationApplication;
-import com.epam.esm.authorization.constant.Authorities;
+import com.epam.esm.authorization.dto.UpdatePersonRoleDto;
+import com.epam.esm.authorization.integration.constant.Authorities;
 import com.epam.esm.authorization.integration.constant.TestFilePaths;
 import com.epam.esm.authorization.integration.constant.TestUrls;
 import com.epam.esm.authorization.integration.container.PostgreSqlTestContainer;
 import com.epam.esm.authorization.integration.reader.JsonReader;
+import com.epam.esm.authorization.repository.PersonAuthorityRepository;
 import com.epam.esm.authorization.repository.PersonRepository;
+import com.epam.esm.authorization.service.AuthoritiesService;
+import com.epam.esm.authorization.service.PersonService;
 import com.epam.esm.authorization.util.TestEntityFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -32,12 +35,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = AuthorizationApplication.class)
 class PersonControllerIntegrationTest {
 
+    private static final String ROLE = "role";
     private final JsonReader jsonReader = new JsonReader();
     private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private AuthoritiesService authoritiesService;
+    @Autowired
+    private PersonAuthorityRepository personAuthorityRepository;
+    @Autowired
+    private PersonService personService;
 
     @BeforeEach
     public void execute() {
@@ -114,6 +124,59 @@ class PersonControllerIntegrationTest {
             );
 
         assertThat(personRepository.count()).isZero();
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void createRole_shouldReturnCreatedPersonRole_whenCalledCreateRoleEndpointWithValidBody() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_PERSON_ROLE);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.post(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isOk())
+            .andExpectAll(
+                jsonPath("$.role").value(ROLE)
+            );
+
+        assertThat(authoritiesService.getAllRoles()).hasSize(3);
+        authoritiesService.deleteRole(ROLE);
+    }
+
+    @Test
+    @WithMockUser
+    void createRole_shouldReturn403_whenCalledCreateRoleEndpointWithoutAdminRole() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_PERSON_ROLE);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.post(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isForbidden());
+
+        assertThat(authoritiesService.getAllRoles()).hasSize(2);
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void createRole_shouldReturn400_whenCalledCreateRoleEndpointWithEmptyRole() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_PERSON_ROLE_WITH_EMPTY_ROLE);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.post(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isBadRequest())
+            .andExpectAll(
+                jsonPath("$.code").value(400),
+                jsonPath("$.message").value("person role must be not empty")
+            );
+
+        assertThat(authoritiesService.getAllRoles()).hasSize(2);
     }
 
     @Test
@@ -289,7 +352,25 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
-    @Transactional
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void getAllRoles_shouldReturnListOfPersonRoles_whenCalledGetAllRolesEndpoint() throws Exception {
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.get(TestUrls.PERSONS_URL + TestUrls.ROLE_URL))
+            .andExpect(status().isOk())
+            .andExpectAll(
+                jsonPath("$.size()").value(authoritiesService.getAllRoles().size())
+            );
+    }
+
+    @Test
+    @WithMockUser
+    void getAllRoles_shouldReturn403_whenCalledGetAllRolesEndpointWithoutAdminRole() throws Exception {
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.get(TestUrls.PERSONS_URL + TestUrls.ROLE_URL))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
     void update_shouldReturn200_whenCalledUpdateEndpointWithEmailThatExist() throws Exception {
         // GIVEN
@@ -305,10 +386,10 @@ class PersonControllerIntegrationTest {
 
         assertThat(personRepository.count()).isEqualTo(1);
         var updatedPerson = personRepository.findByEmail(person.getEmail()).get();
+        var role = personAuthorityRepository.findAll().get(0).getAuthority();
         assertAll(
-            () -> assertThat(updatedPerson.getEnabled()).isEqualTo(updatedPerson.getEnabled()),
-            () -> assertThat(updatedPerson.getAuthorities().iterator().next().getAuthority()).isEqualTo(
-                updatePerson.getAuthorities().iterator().next())
+            () -> assertThat(updatedPerson.getEnabled()).isEqualTo(updatePerson.getEnabled()),
+            () -> assertThat(role).isEqualTo(updatePerson.getAuthorities().iterator().next())
         );
     }
 
@@ -423,6 +504,26 @@ class PersonControllerIntegrationTest {
             );
 
         assertThat(personRepository.count()).isZero();
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
+    void update_shouldReturn404_whenCalledUpdateEndpointWithRoleThatNotExist() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON_WITH_ROLE_THAT_NOT_EXIST);
+        var person = TestEntityFactory.createDefaultPerson();
+        personRepository.save(person);
+
+        // THEN
+        mockMvc.perform(
+                MockMvcRequestBuilders.patch(TestUrls.PERSONS_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonNode.toString()))
+            .andExpect(status().isNotFound())
+            .andExpectAll(
+                jsonPath("$.code").value(404),
+                jsonPath("$.message").value("Role ROLE_" + ROLE + " not found")
+            );
     }
 
     @Test
@@ -549,6 +650,99 @@ class PersonControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void updateRole_shouldReturnUpdatedPersonRole_whenCalledUpdateRoleEndpointWithValidBody() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON_ROLE);
+        var person = TestEntityFactory.createDefaultPerson();
+        personRepository.save(person);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.patch(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isOk())
+            .andExpectAll(
+                jsonPath("$.role").value(ROLE)
+            );
+
+        var role = personAuthorityRepository.findAll().get(0).getAuthority();
+        assertAll(
+            () -> assertThat(authoritiesService.getAllRoles()).hasSize(2),
+            () -> assertThat(role).isEqualTo(ROLE)
+        );
+
+        var updateRole = new UpdatePersonRoleDto();
+        updateRole.setOldRole(ROLE);
+        updateRole.setNewRole(person.getAuthorities().iterator().next().getAuthority());
+        personService.updateRole(updateRole);
+    }
+
+    @Test
+    @WithMockUser
+    void updateRole_shouldReturn403_whenCalledUpdateRoleEndpointWithoutAdminRole() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON_ROLE);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.patch(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isForbidden());
+
+        assertThat(authoritiesService.getAllRoles()).doesNotContain(ROLE);
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void updateRole_shouldReturn400_whenCalledUpdateRoleEndpointWithEmptyOldRole() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON_ROLE_WITH_EMPTY_OLD_ROLE);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.patch(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isBadRequest());
+
+        assertThat(authoritiesService.getAllRoles()).doesNotContain(ROLE);
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void updateRole_shouldReturn400_whenCalledUpdateRoleEndpointWithEmptyNewRole() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON_ROLE_WITH_EMPTY_NEW_ROLE);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.patch(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isBadRequest());
+
+        assertThat(authoritiesService.getAllRoles()).doesNotContain(ROLE);
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void updateRole_shouldReturn404_whenCalledUpdateRoleEndpointWithOldRoleThatNotExist() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_UPDATE_PERSON_ROLE_WITH_OLD_ROLE_THAT_NOT_EXIST);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.patch(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isNotFound())
+            .andExpectAll(
+                jsonPath("$.code").value(404),
+                jsonPath("$.message").value("Role " + ROLE + " not found")
+            );
+
+        assertThat(authoritiesService.getAllRoles()).doesNotContain(ROLE);
+    }
+
+    @Test
     @WithMockUser(authorities = {Authorities.ADMIN_ROLE, Authorities.PERSONS_WRITE})
     void delete_shouldReturn200_whenCalledDeleteEndpointWithEmailThatExist() throws Exception {
         // GIVEN
@@ -602,8 +796,8 @@ class PersonControllerIntegrationTest {
 
         // THEN
         mockMvc.perform(MockMvcRequestBuilders.delete(TestUrls.PERSONS_URL)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonNode.toString()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
             .andExpect(status().isBadRequest())
             .andExpectAll(
                 jsonPath("$.code").value(400),
@@ -611,5 +805,84 @@ class PersonControllerIntegrationTest {
             );
 
         assertThat(personRepository.count()).isZero();
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void deleteRole_shouldReturnDeletedPersonRole_whenCalledDeleteRoleEndpointWithValidBody() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_DELETE_PERSON_ROLE);
+        var person = TestEntityFactory.createDefaultPerson();
+        personRepository.save(person);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.delete(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isOk())
+            .andExpectAll(
+                jsonPath("$.role").value(person.getAuthorities().iterator().next().getAuthority())
+            );
+
+        var roles = personAuthorityRepository.findRoles();
+        assertAll(
+            () -> assertThat(authoritiesService.getAllRoles()).hasSize(1),
+            () -> assertThat(roles).isEmpty()
+        );
+
+        authoritiesService.addRole(person.getAuthorities().iterator().next().getAuthority());
+    }
+
+    @Test
+    @WithMockUser
+    void deleteRole_shouldReturn403_whenCalledDeleteRoleEndpointWithoutAdminRole() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_DELETE_PERSON_ROLE);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.delete(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isForbidden());
+
+        assertThat(authoritiesService.getAllRoles()).hasSize(2);
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void deleteRole_shouldReturn400_whenCalledDeleteRoleEndpointWithEmptyScope() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_CREATE_PERSON_ROLE_WITH_EMPTY_ROLE);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.delete(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isBadRequest())
+            .andExpectAll(
+                jsonPath("$.code").value(400),
+                jsonPath("$.message").value("person role must be not empty")
+            );
+
+        assertThat(authoritiesService.getAllRoles()).hasSize(2);
+    }
+
+    @Test
+    @WithMockUser(authorities = {Authorities.ADMIN_ROLE})
+    void deleteRole_shouldReturn404_whenCalledDeleteRoleEndpointWithRoleThatNotExist() throws Exception {
+        // GIVEN
+        var jsonNode = jsonReader.readJsonFile(TestFilePaths.PATH_TO_DELETE_PERSON_ROLE_WITH_ROLE_THAT_NOT_EXIST);
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.delete(TestUrls.PERSONS_URL + TestUrls.ROLE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonNode.toString()))
+            .andExpect(status().isNotFound())
+            .andExpectAll(
+                jsonPath("$.code").value(404),
+                jsonPath("$.message").value("Role " + ROLE + " not found")
+            );
+
+        assertThat(authoritiesService.getAllRoles()).hasSize(2);
     }
 }

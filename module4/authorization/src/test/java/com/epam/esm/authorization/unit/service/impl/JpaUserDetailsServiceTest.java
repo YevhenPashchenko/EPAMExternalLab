@@ -2,7 +2,9 @@ package com.epam.esm.authorization.unit.service.impl;
 
 import com.epam.esm.authorization.assembler.PersonDtoAssembler;
 import com.epam.esm.authorization.entity.Person;
+import com.epam.esm.authorization.handler.exception.EntityNotFoundException;
 import com.epam.esm.authorization.repository.PersonRepository;
+import com.epam.esm.authorization.service.AuthoritiesService;
 import com.epam.esm.authorization.service.impl.JpaUserDetailsService;
 import com.epam.esm.authorization.util.TestEntityFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,19 +35,22 @@ import static org.mockito.Mockito.mock;
 
 class JpaUserDetailsServiceTest {
 
+    private final static String ROLE = "ROLE_user";
+    private final static String UPDATE_ROLE = "ROLE_admin";
+    private final static String NEW_PASSWORD = "newPassword";
     private final static int PAGE = 0;
     private final static int SIZE = 2;
-    private final static String NEW_PASSWORD = "newPassword";
 
     private final PersonRepository personRepository = mock(PersonRepository.class);
     private final PersonDtoAssembler personDtoAssembler = mock(PersonDtoAssembler.class);
     @SuppressWarnings("unchecked")
     private final PagedResourcesAssembler<Person> pagedResourcesAssembler
         = mock(PagedResourcesAssembler.class);
+    private final AuthoritiesService authoritiesService = mock(AuthoritiesService.class);
     private final SecurityContextHolderStrategy securityContextHolderStrategy =
         SecurityContextHolder.getContextHolderStrategy();
     private final JpaUserDetailsService jpaUserDetailsService =
-        new JpaUserDetailsService(personRepository, personDtoAssembler, pagedResourcesAssembler);
+        new JpaUserDetailsService(personRepository, personDtoAssembler, pagedResourcesAssembler, authoritiesService);
 
     @BeforeEach
     public void clearContext() {
@@ -76,11 +83,33 @@ class JpaUserDetailsServiceTest {
 
     @Test
     void createUser_shouldCallsPersonRepositorySave_whenExecutedNormally() {
+        // GIVEN
+        given(authoritiesService.getAllRoles()).willReturn(Set.of(ROLE));
+
         // WHEN
         jpaUserDetailsService.createUser(TestEntityFactory.createDefaultUser());
 
         // THEN
         then(personRepository).should(atLeastOnce()).save(any(Person.class));
+    }
+
+    @Test
+    void createUser_shouldThrowUsernameNotFoundException_whenUserRoleNotExist() {
+        // THEN
+        assertThrows(EntityNotFoundException.class,
+            () -> jpaUserDetailsService.createUser(TestEntityFactory.createDefaultUser()));
+    }
+
+    @Test
+    void createRole_shouldReturnCreatedPersonRole_whenExecutedNormally() {
+        // GIVEN
+        var role = TestEntityFactory.createDefaultPersonRoleDto();
+
+        // WHEN
+        var result = jpaUserDetailsService.createRole(role);
+
+        // THEN
+        assertThat(result).isEqualTo(role);
     }
 
     @Test
@@ -118,12 +147,36 @@ class JpaUserDetailsServiceTest {
     }
 
     @Test
+    void getAllRoles_shouldReturnListPersonRoles_whenExecutedNormally() {
+        // GIVEN
+        given(authoritiesService.getAllRoles()).willReturn(Set.of(ROLE));
+
+        // WHEN
+        var result = jpaUserDetailsService.getAllRoles();
+
+        // THEN
+        assertThat(result).isEqualTo(List.of(TestEntityFactory.createDefaultPersonRoleDto()));
+    }
+
+    @Test
     void updateUser_shouldThrowUsernameNotFoundException_whenUserWithThisEmailNotExist() {
         // GIVEN
+        given(authoritiesService.getAllRoles()).willReturn(Set.of(ROLE));
         given(personRepository.findByEmail(anyString())).willReturn(Optional.empty());
 
         // THEN
         assertThrows(UsernameNotFoundException.class,
+            () -> jpaUserDetailsService.updateUser(TestEntityFactory.createDefaultUser()));
+    }
+
+    @Test
+    void updateUser_shouldThrowEntityNotFoundException_whenPersonRoleNotExist() {
+        // GIVEN
+        given(personRepository.findByEmail(anyString())).willReturn(
+            Optional.of(TestEntityFactory.createDefaultPerson()));
+
+        // THEN
+        assertThrows(EntityNotFoundException.class,
             () -> jpaUserDetailsService.updateUser(TestEntityFactory.createDefaultUser()));
     }
 
@@ -184,5 +237,47 @@ class JpaUserDetailsServiceTest {
         // THEN
         assertThrows(BadCredentialsException.class,
             () -> jpaUserDetailsService.changePassword(NEW_PASSWORD, NEW_PASSWORD));
+    }
+
+    @Test
+    void updateRole_shouldReturnUpdatedPersonRole_whenExecutedNormally() {
+        // GIVEN
+        var role = TestEntityFactory.createDefaultPersonRoleDto();
+        role.setRole(UPDATE_ROLE);
+        given(authoritiesService.getAllRoles()).willReturn(Set.of(ROLE));
+
+        // WHEN
+        var result =
+            jpaUserDetailsService.updateRole(TestEntityFactory.createDefaultUpdatePersonRoleDto());
+
+        // THEN
+        assertThat(result).isEqualTo(role);
+    }
+
+    @Test
+    void updateRole_shouldThrowEntityNotFoundException_whenPersonRoleNotExist() {
+        // THEN
+        assertThrows(EntityNotFoundException.class, () -> jpaUserDetailsService.updateRole(
+            TestEntityFactory.createDefaultUpdatePersonRoleDto()));
+    }
+
+    @Test
+    void deleteRole_shouldReturnDeletedPersonRole_whenExecutedNormally() {
+        // GIVEN
+        var role = TestEntityFactory.createDefaultPersonRoleDto();
+        given(authoritiesService.getAllRoles()).willReturn(Set.of(ROLE));
+
+        // WHEN
+        var result = jpaUserDetailsService.deleteRole(role);
+
+        // THEN
+        assertThat(result).isEqualTo(role);
+    }
+
+    @Test
+    void deleteRole_shouldThrowEntityNotFoundException_whenPersonRoleNotExist() {
+        // THEN
+        assertThrows(EntityNotFoundException.class,
+            () -> jpaUserDetailsService.deleteRole(TestEntityFactory.createDefaultPersonRoleDto()));
     }
 }

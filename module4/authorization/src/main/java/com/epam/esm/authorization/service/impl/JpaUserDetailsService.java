@@ -2,9 +2,13 @@ package com.epam.esm.authorization.service.impl;
 
 import com.epam.esm.authorization.assembler.PersonDtoAssembler;
 import com.epam.esm.authorization.dto.PersonDto;
+import com.epam.esm.authorization.dto.PersonRoleDto;
+import com.epam.esm.authorization.dto.UpdatePersonRoleDto;
 import com.epam.esm.authorization.entity.Person;
 import com.epam.esm.authorization.entity.PersonAuthority;
+import com.epam.esm.authorization.handler.exception.EntityNotFoundException;
 import com.epam.esm.authorization.repository.PersonRepository;
+import com.epam.esm.authorization.service.AuthoritiesService;
 import com.epam.esm.authorization.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +39,7 @@ public class JpaUserDetailsService implements PersonService {
     private final PersonRepository personRepository;
     private final PersonDtoAssembler personDtoAssembler;
     private final PagedResourcesAssembler<Person> pagedResourcesAssembler;
+    private final AuthoritiesService authoritiesService;
     private final SecurityContextHolderStrategy securityContextHolderStrategy =
         SecurityContextHolder.getContextHolderStrategy();
 
@@ -68,10 +74,23 @@ public class JpaUserDetailsService implements PersonService {
         }
         person.setEnabled(user.isEnabled());
         user.getAuthorities().forEach(grantedAuthority -> {
+            isRoleExist(grantedAuthority.getAuthority());
             var personAuthority = new PersonAuthority();
             personAuthority.setAuthority(grantedAuthority.getAuthority());
             person.addPersonAuthority(personAuthority);
         });
+    }
+
+    private void isRoleExist(String role) {
+        if (!authoritiesService.getAllRoles().contains(role)) {
+            throw new EntityNotFoundException("Role " + role + " not found");
+        }
+    }
+
+    @Override
+    public PersonRoleDto createRole(PersonRoleDto personRole) {
+        authoritiesService.addRole(personRole.getRole());
+        return personRole;
     }
 
     @Override
@@ -84,6 +103,15 @@ public class JpaUserDetailsService implements PersonService {
     public EntityModel<PersonDto> getUserByEmail(String email) {
         return EntityModel.of(personDtoAssembler.toModel(personRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException(setEmailNotFoundMessage(email)))));
+    }
+
+    @Override
+    public List<PersonRoleDto> getAllRoles() {
+        return authoritiesService.getAllRoles().stream().map(role -> {
+            var personRole = new PersonRoleDto();
+            personRole.setRole(role);
+            return personRole;
+        }).toList();
     }
 
     @Override
@@ -126,8 +154,26 @@ public class JpaUserDetailsService implements PersonService {
 
     @Override
     @Transactional
+    public PersonRoleDto updateRole(UpdatePersonRoleDto updatePersonRole) {
+        isRoleExist(updatePersonRole.getOldRole());
+        authoritiesService.updateRole(updatePersonRole.getOldRole(), updatePersonRole.getNewRole());
+        var personRole = new PersonRoleDto();
+        personRole.setRole(updatePersonRole.getNewRole());
+        return personRole;
+    }
+
+    @Override
+    @Transactional
     public void deleteUser(String email) {
         personRepository.deleteByEmail(email);
+    }
+
+    @Override
+    @Transactional
+    public PersonRoleDto deleteRole(PersonRoleDto personRole) {
+        isRoleExist(personRole.getRole());
+        authoritiesService.deleteRole(personRole.getRole());
+        return personRole;
     }
 
     @Override

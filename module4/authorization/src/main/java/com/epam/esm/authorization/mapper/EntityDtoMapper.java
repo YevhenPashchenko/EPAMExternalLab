@@ -7,11 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.springframework.util.StringUtils;
-
-import java.util.Set;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface EntityDtoMapper {
@@ -24,12 +20,7 @@ public interface EntityDtoMapper {
      * @see Client
      * @see UpdateClientDto
      */
-    @Mapping(source = "scopes", target = "scopes", qualifiedByName = "setToString")
+    @Mapping(target = "clientScopes", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateClient(@MappingTarget Client client, UpdateClientDto updateClient);
-
-    @Named("setToString")
-    static String setToString(Set<String> scopes) {
-        return StringUtils.collectionToCommaDelimitedString(scopes);
-    }
 }

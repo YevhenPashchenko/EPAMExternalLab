@@ -1,13 +1,17 @@
 package com.epam.esm.authorization.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -42,14 +46,23 @@ public class Client {
     @Column(name = "redirect_uris")
     private String redirectUris;
 
-    @Column(name = "scopes", nullable = false)
-    private String scopes;
-
     @Column(name = "client_settings", nullable = false)
     private String clientSettings;
 
     @Column(name = "token_settings", nullable = false)
     private String tokenSettings;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ClientScope> clientScopes = new HashSet<>();
+
+    public void addClientScope(ClientScope clientScope) {
+        clientScopes.add(clientScope);
+        clientScope.setClient(this);
+    }
+
+    public void removeClientScope(ClientScope clientScope) {
+        clientScopes.remove(clientScope);
+    }
 
     @Override
     public boolean equals(Object o) {
