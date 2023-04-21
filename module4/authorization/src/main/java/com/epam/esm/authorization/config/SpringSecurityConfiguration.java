@@ -3,6 +3,7 @@ package com.epam.esm.authorization.config;
 import com.epam.esm.authorization.security.CustomJwtGrantedAuthoritiesConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,6 +25,7 @@ public class SpringSecurityConfiguration {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new CustomJwtGrantedAuthoritiesConverter());
 
         http
+            .authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.GET, "/login/**").permitAll())
             .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

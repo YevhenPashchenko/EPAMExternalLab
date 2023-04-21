@@ -5,6 +5,7 @@ import com.epam.esm.authorization.entity.Client;
 import com.epam.esm.authorization.handler.exception.EntityNotFoundException;
 import com.epam.esm.authorization.mapper.EntityDtoMapper;
 import com.epam.esm.authorization.repository.ClientRepository;
+import com.epam.esm.authorization.service.AuthoritiesService;
 import com.epam.esm.authorization.service.impl.JpaRegisteredClientRepositoryService;
 import com.epam.esm.authorization.util.TestEntityFactory;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -29,18 +31,53 @@ import static org.mockito.Mockito.mock;
 
 class JpaRegisteredClientRepositoryServiceTest {
 
-    private final static int PAGE = 0;
-    private final static int SIZE = 2;
+    private static final String SCOPE = "clients.read";
+    private static final String UPDATE_SCOPE = "clients.write";
+    private static final int PAGE = 0;
+    private static final int SIZE = 2;
 
     private final ClientRepository clientRepository = mock(ClientRepository.class);
     private final ClientDtoAssembler clientDtoAssembler = mock(ClientDtoAssembler.class);
     @SuppressWarnings("unchecked")
     private final PagedResourcesAssembler<Client> pagedResourcesAssembler = mock(PagedResourcesAssembler.class);
+    private final AuthoritiesService authoritiesService = mock(AuthoritiesService.class);
     private final EntityDtoMapper entityDtoMapper = mock(EntityDtoMapper.class);
-    private final AuthorizationServerSettings authorizationServerSettings = AuthorizationServerSettings.builder().build();
+    private final AuthorizationServerSettings authorizationServerSettings =
+        AuthorizationServerSettings.builder().build();
     private final JpaRegisteredClientRepositoryService jpaRegisteredClientRepositoryService =
         new JpaRegisteredClientRepositoryService(clientRepository, clientDtoAssembler, pagedResourcesAssembler,
-            entityDtoMapper, authorizationServerSettings);
+            authoritiesService, entityDtoMapper, authorizationServerSettings);
+
+    @Test
+    void create_shouldCallsClientRepositorySave_whenExecutedNormally() {
+        // GIVEN
+        given(authoritiesService.getAllScopes()).willReturn(Set.of(SCOPE));
+
+        // WHEN
+        jpaRegisteredClientRepositoryService.create(TestEntityFactory.createDefaultClientDto());
+
+        // THEN
+        then(clientRepository).should(atLeastOnce()).save(any(Client.class));
+    }
+
+    @Test
+    void create_shouldThrowEntityNotFoundException_whenClientScopeNotExist() {
+        // THEN
+        assertThrows(EntityNotFoundException.class,
+            () -> jpaRegisteredClientRepositoryService.create(TestEntityFactory.createDefaultClientDto()));
+    }
+
+    @Test
+    void createScope_shouldReturnCreatedClientScope_whenExecutedNormally() {
+        // GIVEN
+        var clientScope = TestEntityFactory.createDefaultClientScopeDto();
+
+        // WHEN
+        var result = jpaRegisteredClientRepositoryService.createScope(clientScope);
+
+        // THEN
+        assertThat(result).isEqualTo(clientScope);
+    }
 
     @Test
     void save_shouldCallsClientRepositorySave_whenExecutedNormally() {
@@ -85,6 +122,18 @@ class JpaRegisteredClientRepositoryServiceTest {
         // THEN
         assertThrows(EntityNotFoundException.class,
             () -> jpaRegisteredClientRepositoryService.getClientById(client.getClientId()));
+    }
+
+    @Test
+    void getAllScopes_shouldReturnListClientScopes_whenExecutedNormally() {
+        // GIVEN
+        given(authoritiesService.getAllScopes()).willReturn(Set.of(SCOPE));
+
+        // WHEN
+        var result = jpaRegisteredClientRepositoryService.getAllScopes();
+
+        // THEN
+        assertThat(result).isEqualTo(List.of(TestEntityFactory.createDefaultClientScopeDto()));
     }
 
     @Test
@@ -147,6 +196,7 @@ class JpaRegisteredClientRepositoryServiceTest {
         var client = TestEntityFactory.createDefaultClient();
         var updateClient = TestEntityFactory.createDefaultUpdateClientDto();
         var clientDto = TestEntityFactory.createDefaultClientDto();
+        given(authoritiesService.getAllScopes()).willReturn(Set.of(UPDATE_SCOPE));
         given(clientRepository.findByClientId(anyString())).willReturn(Optional.of(client));
         given(clientDtoAssembler.toModel(client)).willReturn(clientDto);
 
@@ -155,6 +205,17 @@ class JpaRegisteredClientRepositoryServiceTest {
 
         // THEN
         assertThat(result).isEqualTo(EntityModel.of(clientDto));
+    }
+
+    @Test
+    void update_shouldThrowEntityNotFoundException_whenClientScopeNotExist() {
+        // GIVEN
+        var client = TestEntityFactory.createDefaultClient();
+        var updateClient = TestEntityFactory.createDefaultUpdateClientDto();
+
+        // THEN
+        assertThrows(EntityNotFoundException.class,
+            () -> jpaRegisteredClientRepositoryService.update(client.getClientId(), updateClient));
     }
 
     @Test
@@ -167,6 +228,28 @@ class JpaRegisteredClientRepositoryServiceTest {
         // THEN
         assertThrows(EntityNotFoundException.class,
             () -> jpaRegisteredClientRepositoryService.update(client.getClientId(), updateClient));
+    }
+
+    @Test
+    void updateScope_shouldReturnUpdatedClientScope_whenExecutedNormally() {
+        // GIVEN
+        var clientScope = TestEntityFactory.createDefaultClientScopeDto();
+        clientScope.setScope(UPDATE_SCOPE);
+        given(authoritiesService.getAllScopes()).willReturn(Set.of(SCOPE));
+
+        // WHEN
+        var result =
+            jpaRegisteredClientRepositoryService.updateScope(TestEntityFactory.createDefaultUpdateClientScopeDto());
+
+        // THEN
+        assertThat(result).isEqualTo(clientScope);
+    }
+
+    @Test
+    void updateScope_shouldThrowEntityNotFoundException_whenClientScopeNotExist() {
+        // THEN
+        assertThrows(EntityNotFoundException.class, () -> jpaRegisteredClientRepositoryService.updateScope(
+            TestEntityFactory.createDefaultUpdateClientScopeDto()));
     }
 
     @Test
@@ -192,5 +275,25 @@ class JpaRegisteredClientRepositoryServiceTest {
         // THEN
         assertThrows(EntityNotFoundException.class,
             () -> jpaRegisteredClientRepositoryService.delete(client.getClientId()));
+    }
+
+    @Test
+    void deleteScope_shouldReturnDeletedClientScope_whenExecutedNormally() {
+        // GIVEN
+        var clientScope = TestEntityFactory.createDefaultClientScopeDto();
+        given(authoritiesService.getAllScopes()).willReturn(Set.of(SCOPE));
+
+        // WHEN
+        var result = jpaRegisteredClientRepositoryService.deleteScope(clientScope);
+
+        // THEN
+        assertThat(result).isEqualTo(clientScope);
+    }
+
+    @Test
+    void deleteScope_shouldThrowEntityNotFoundException_whenClientScopeNotExist() {
+        // THEN
+        assertThrows(EntityNotFoundException.class,
+            () -> jpaRegisteredClientRepositoryService.deleteScope(TestEntityFactory.createDefaultClientScopeDto()));
     }
 }

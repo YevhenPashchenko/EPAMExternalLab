@@ -23,10 +23,27 @@ class AuthorizationServiceImplTest {
     private final OAuth2AuthorizationService authorizationService = mock(OAuth2AuthorizationService.class);
     private final OAuth2AuthorizationConsentService authorizationConsentService =
         mock(OAuth2AuthorizationConsentService.class);
-    private final AuthorizationServerSettings authorizationServerSettings = AuthorizationServerSettings.builder().build();
+    private final AuthorizationServerSettings authorizationServerSettings =
+        AuthorizationServerSettings.builder().issuer("http://127.0.0.1:9000").build();
     private final AuthorizationServiceImpl authorizationServiceImpl =
         new AuthorizationServiceImpl(authenticationManager, registeredClientRepository, authorizationService,
             authorizationConsentService, authorizationServerSettings);
+
+    @Test
+    void getTokenForLogin_shouldReturnAuthorizationCode_whenExecutedNormally() {
+        // GIVEN
+        var user = TestEntityFactory.createDefaultUser();
+        var client = TestEntityFactory.createDefaultRegisteredClient();
+        given(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).willReturn(
+            new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities()));
+        given(registeredClientRepository.findByClientId(anyString())).willReturn(client);
+
+        // WHEN
+        var result = authorizationServiceImpl.getTokenForLogin(client.getClientId());
+
+        // THEN
+        assertThat(result).isNotNull();
+    }
 
     @Test
     void login_shouldReturnAuthorizationCode_whenExecutedNormally() {

@@ -1,4 +1,4 @@
-package com.epam.esm.authorization.constant;
+package com.epam.esm.authorization.integration.constant;
 
 import lombok.experimental.UtilityClass;
 

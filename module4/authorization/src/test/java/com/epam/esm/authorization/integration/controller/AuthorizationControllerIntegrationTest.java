@@ -1,7 +1,7 @@
 package com.epam.esm.authorization.integration.controller;
 
 import com.epam.esm.authorization.AuthorizationApplication;
-import com.epam.esm.authorization.constant.Authorities;
+import com.epam.esm.authorization.integration.constant.Authorities;
 import com.epam.esm.authorization.integration.constant.TestFilePaths;
 import com.epam.esm.authorization.integration.constant.TestUrls;
 import com.epam.esm.authorization.integration.container.PostgreSqlTestContainer;
@@ -27,6 +27,30 @@ class AuthorizationControllerIntegrationTest {
     private final JsonReader jsonReader = new JsonReader();
     @Autowired
     private MockMvc mockMvc;
+
+    @Test
+    void getToken_shouldReturn200_whenCalledLoginEndpointWithClientIdThatExist() throws Exception {
+        // GIVEN
+        var clientId = "base-client";
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.get(TestUrls.LOGIN_URL + "/" + clientId)).andExpect(status().isOk());
+    }
+
+    @Test
+    void getToken_shouldReturn404_whenCalledLoginEndpointWithClientIdThatNotExist() throws Exception {
+        // GIVEN
+        var clientId = "client";
+
+        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.get(TestUrls.LOGIN_URL + "/" + clientId))
+            .andExpect(status().isNotFound())
+            .andExpectAll(
+                jsonPath("$.code").value(404),
+                jsonPath("$.message").value(
+                    "Client with client id " + clientId + " not found")
+            );
+    }
 
     @Test
     @WithMockUser(authorities = {Authorities.PERSONS_READ})
@@ -67,7 +91,8 @@ class AuthorizationControllerIntegrationTest {
             .andExpect(status().isNotFound())
             .andExpectAll(
                 jsonPath("$.code").value(404),
-                jsonPath("$.message").value("Client with client id " + jsonNode.get("client-id").asText() + " not found")
+                jsonPath("$.message").value(
+                    "Client with client id " + jsonNode.get("client-id").asText() + " not found")
             );
     }
 

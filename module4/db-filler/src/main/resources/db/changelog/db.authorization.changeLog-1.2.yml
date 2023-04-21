@@ -77,4 +77,6 @@ databaseChangeLog:
             endDelimiter: ;
             sql:
               insert into person values (nextval('person_id_seq'), 'admin@mail.com', '{bcrypt}$2a$10$fv6VVcTfVkVI99d/iwyeDeGIqohnppGwRg96U2jzQumPZVs2P3JeG', true);
-              insert into person_authorities values (nextval('person_authorities_id_seq'), 'admin@mail.com', 'ROLE_admin')
+              insert into person values (nextval('person_id_seq'), 'person@mail.com', '{bcrypt}$2a$10$fv6VVcTfVkVI99d/iwyeDeGIqohnppGwRg96U2jzQumPZVs2P3JeG', true);
+              insert into person_authorities values (nextval('person_authorities_id_seq'), 'admin@mail.com', 'ROLE_admin');
+              insert into person_authorities values (nextval('person_authorities_id_seq'), 'person@mail.com', 'ROLE_user');

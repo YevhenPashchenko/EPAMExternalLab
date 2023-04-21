@@ -3,7 +3,6 @@ package com.epam.esm.giftcertificates.config;
 import com.epam.esm.giftcertificates.security.CustomJwtGrantedAuthoritiesConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,12 +21,7 @@ public class SpringSecurityConfiguration {
         var jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new CustomJwtGrantedAuthoritiesConverter());
 
-        http.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/tags/widely-used")
-                .authenticated()
-                .requestMatchers(HttpMethod.GET, "/tags/**", "/gift-certificates/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated())
+        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .oauth2ResourceServer()
