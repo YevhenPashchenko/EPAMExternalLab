@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: create authorization table
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: authorization
+            columns:
+              - column:
+                  name: id
+                  type: varchar(100)
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: authorization_id_pkey
+                    nullable: false
+              - column:
+                  name: registered_client_id
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: principal_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: authorization_grant_type
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: authorized_scopes
+                  type: varchar(1000)
+              - column:
+                  name: attributes
+                  type: varchar(4000)
+              - column:
+                  name: state
+                  type: varchar(500)
+              - column:
+                  name: authorization_code_value
+                  type: varchar(4000)
+              - column:
+                  name: authorization_code_issued_at
+                  type: timestamp without time zone
+              - column:
+                  name: authorization_code_expires_at
+                  type: timestamp without time zone
+              - column:
+                  name: authorization_code_metadata
+                  type: varchar(2000)
+              - column:
+                  name: access_token_value
+                  type: varchar(4000)
+              - column:
+                  name: access_token_issued_at
+                  type: timestamp without time zone
+              - column:
+                  name: access_token_expires_at
+                  type: timestamp without time zone
+              - column:
+                  name: access_token_metadata
+                  type: varchar(2000)
+              - column:
+                  name: access_token_type
+                  type: varchar(100)
+              - column:
+                  name: access_token_scopes
+                  type: varchar(1000)
+              - column:
+                  name: refresh_token_value
+                  type: varchar(4000)
+              - column:
+                  name: refresh_token_issued_at
+                  type: timestamp without time zone
+              - column:
+                  name: refresh_token_expires_at
+                  type: timestamp without time zone
+              - column:
+                  name: refresh_token_metadata
+                  type: varchar(2000)
+              - column:
+                  name: oidc_id_token_value
+                  type: varchar(4000)
+              - column:
+                  name: oidc_id_token_issued_at
+                  type: timestamp without time zone
+              - column:
+                  name: oidc_id_token_expires_at
+                  type: timestamp without time zone
+              - column:
+                  name: oidc_id_token_metadata
+                  type: varchar(2000)
+              - column:
+                  name: oidc_id_token_claims
+                  type: varchar(2000)

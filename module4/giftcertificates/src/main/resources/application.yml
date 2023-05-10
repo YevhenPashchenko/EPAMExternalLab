@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://host.docker.internal:5432/giftcertificates
+    username: postgres
+    password: postgres
+  liquibase:
+    driver-class-name: org.postgresql.Driver
+    change-log: classpath:/db/db.giftcertificates.changeLog-master.yml
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: ALL
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://host.docker.internal:9000

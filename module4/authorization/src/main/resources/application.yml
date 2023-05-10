@@ -1,0 +1,29 @@
+server:
+  port: 9000
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://host.docker.internal:5430/authorization
+    username: postgres
+    password: postgres
+  liquibase:
+    driver-class-name: org.postgresql.Driver
+    change-log: classpath:/db/db.authorization.changeLog-master.yml
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: ALL
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE

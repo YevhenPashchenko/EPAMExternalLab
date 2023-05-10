@@ -1,0 +1,10 @@
+{
+  "client-id": "client",
+  "email": "admin@mail.com",
+  "password": "password",
+  "redirect-uri": "http://127.0.0.1:9000/login",
+  "scopes": [
+    "clients.read",
+    "clients.write"
+  ]
+}

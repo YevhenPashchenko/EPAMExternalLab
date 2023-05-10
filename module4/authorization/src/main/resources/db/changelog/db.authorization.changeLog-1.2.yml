@@ -1,0 +1,82 @@
+databaseChangeLog:
+  - changeSet:
+      id: create person, person_authorities tables, add default admin person
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: person
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: person_id_pkey
+              - column:
+                  name: email
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: boolean
+                  constraints:
+                    nullable: false
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: person_id_seq
+        - addUniqueConstraint:
+            columnNames: email
+            constraintName: person_email_unique
+            tableName: person
+        - createTable:
+            tableName: person_authorities
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: person_authorities_id_pkey
+              - column:
+                  name: person_email
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: authority
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: person_authorities_id_seq
+        - addUniqueConstraint:
+            columnNames: person_email, authority
+            constraintName: person_authorities_unique
+            tableName: person_authorities
+        - addForeignKeyConstraint:
+            baseColumnNames: person_email
+            baseTableName: person_authorities
+            constraintName: person_authorities_person_email_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: email
+            referencedTableName: person
+            validateForeignKey: true
+        - sql:
+            endDelimiter: ;
+            sql:
+              insert into person values (nextval('person_id_seq'), 'admin@mail.com', '{bcrypt}$2a$10$fv6VVcTfVkVI99d/iwyeDeGIqohnppGwRg96U2jzQumPZVs2P3JeG', true);
+              insert into person values (nextval('person_id_seq'), 'person@mail.com', '{bcrypt}$2a$10$fv6VVcTfVkVI99d/iwyeDeGIqohnppGwRg96U2jzQumPZVs2P3JeG', true);
+              insert into person_authorities values (nextval('person_authorities_id_seq'), 'admin@mail.com', 'ROLE_admin');
+              insert into person_authorities values (nextval('person_authorities_id_seq'), 'person@mail.com', 'ROLE_user');
