@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.2'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'war'
 	id 'jacoco'
 }
 
@@ -33,6 +34,8 @@ dependencies {
 	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 	implementation 'org.liquibase:liquibase-core'
 
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
 	compileOnly 'org.projectlombok:lombok'
 	compileOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -59,4 +62,10 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+	}
 }
