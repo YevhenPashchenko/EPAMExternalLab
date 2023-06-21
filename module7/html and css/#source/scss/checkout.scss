@@ -1,0 +1,66 @@
+@import "_constant";
+@import "_common";
+@import "_header";
+
+main {
+	width: 80%;
+
+	> h3 {
+		padding: 15px 200px;
+		background: $bg-lightgray;
+		color: $color-white;
+	}
+
+	> form {
+		padding: 15px 200px;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+
+		> div {
+			display: flex;
+			align-items: center;
+		}
+
+		.coupon {
+			justify-content: space-between;
+			gap: 20px;
+
+			> img {
+				width: 10%;
+			}
+
+			.description {
+				flex-grow: 2;
+			}
+		}
+
+		.total {
+			justify-content: flex-end;
+			gap: 100px;
+			border-top: $border-lightgray;
+		}
+
+		.buttons {
+			justify-content: flex-end;
+			gap: 20px;
+
+			> button {
+				padding: 5px 40px;
+				font-size: $fs-18;
+
+				&.cancel {
+					background: $bg-white;
+					border: $border-lightgray;
+					color: $color-gray;
+				}
+
+				&.sign-up {
+					background: $bg-lightgreen;
+					border: $border-lightgreen;
+					color: $color-white;
+				}
+			}
+		}
+	}
+}

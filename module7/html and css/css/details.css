@@ -1,0 +1,141 @@
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.material-icons.md-18 {
+  font-size: 18px;
+}
+
+.material-icons.md-36 {
+  font-size: 36px;
+}
+
+.material-icons.md-dark.md-inactive {
+  color: rgba(0, 0, 0, 0.26);
+}
+
+.header {
+  width: 80%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 10px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.header span {
+  cursor: pointer;
+}
+.header ul {
+  display: none;
+  margin: 0 0 0 5px;
+  padding: 0;
+  width: auto;
+  list-style-type: none;
+  position: absolute;
+}
+.header ul li {
+  padding: 5px;
+  background: lightgray;
+}
+.header ul li:hover {
+  background: gray;
+}
+.header a {
+  text-decoration: none;
+  color: black;
+}
+.header .logo {
+  padding: 0 5px;
+  font-size: 24px;
+}
+.header .search {
+  -webkit-box-flex: 2;
+      -ms-flex-positive: 2;
+          flex-grow: 2;
+}
+.header .search > form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.header .search > form > label {
+  width: 40%;
+}
+.header .search > form > label > input {
+  padding: 10px 20px;
+  width: 100%;
+  font-size: 14px;
+  border: 1px solid lightgray;
+  border-right: 0px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.header .search > form > select {
+  text-align: center;
+  font-size: 14px;
+  border: 1px solid lightgray;
+}
+
+main {
+  width: 80%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+main > figure {
+  width: 70%;
+}
+main > figure > img {
+  width: 100%;
+}
+main > div {
+  width: 30%;
+}
+main > div > h5 {
+  margin-bottom: 0;
+}
+main > div > .add {
+  margin-top: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+main > div > .add button {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 10px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: deepskyblue;
+  background: white;
+  border: none;
+}

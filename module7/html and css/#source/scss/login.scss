@@ -1,0 +1,54 @@
+@import "_constant";
+@import "_common";
+@import "_header";
+
+main {
+	width: 20%;
+
+	.login {
+		display: flex;
+		margin-top: 200px;
+		position: relative;
+		padding: 120px 0 40px;
+		flex-direction: column;
+		align-items: center;
+		gap: 5px;
+		border: $border-lightgray;
+
+			.round_logo {
+				width: 40%;
+				height: 35%;
+				padding-top: 15%;
+				position: absolute;
+				top: -30%;
+				background: $bg-lightgray;
+				font-size: $fs-34;
+				font-weight: bold;
+				color: $color-white;
+				text-align: center;
+				border-radius: 50%;
+			}
+
+			> label {
+				width: 73.5%;
+
+				> input {
+					width: 95.5%;
+					padding: 5px;
+					text-align: center;
+					font-size: $fs-18;
+					border: $border-lightgray;
+				}
+			}
+
+			> button {
+				width: 70%;
+				padding: 5px;
+				background: $bg-lightgreen;
+				border: $border-lightgreen;
+				font-size: $fs-18;
+				color: $color-white;
+				box-sizing: content-box;
+			}
+	}
+}

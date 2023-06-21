@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Add New Coupon</title>
+        <link rel="stylesheet" type="text/css" href="css/addnew.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+    <body>
+        <!--@import "header.html"-->
+        <main>
+            <h2>Add New Coupon</h2>
+            <form>
+                <label>Company
+                    <input type="text" name="company">
+                </label>
+                <label>Category
+                    <select>
+                        <option>Category Name</option>
+                    </select>
+                </label>
+                <label>Valid to
+                    <input type="datetime-local" name="validTo">
+                </label>
+                <label>Price
+                    <input type="number" name="price" min="0">
+                </label>
+                <label>Images
+                    <input type="file" name="images" accept="image/*">
+                    <span class="material-icons md-dark md-inactive">collections</span>
+                </label>
+                <label>Item Name
+                    <input type="text" name="itemName">
+                </label>
+                <label>Short description
+                    <textarea></textarea>
+                </label>
+                <label>Long description
+                    <textarea></textarea>
+                </label>
+                <div>
+                    <button class="cancel">Back</button>
+                    <button class="sign-up">Save</button>
+                </div>
+            </form>
+        </main>
+    </body>
+</html>
