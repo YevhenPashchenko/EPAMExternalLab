@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <div class="header">
+      <a href="#" class="logo">Logo</a>
+      <div class="search">
+        <form>
+          <label>
+            <input type="search" name="search" placeholder="Search by item name">
+          </label>
+          <label>
+            <select>
+              <option>All categories</option>
+              <% categories.forEach((category) => { %>
+                <option><%= category.dataValues.name %></option>
+              <% }) %>
+            </select>
+          </label>
+        </form>
+      </div>
+      <span class="material-icons md-dark md-inactive">favorite_border</span>
+      <span class="material-icons md-dark md-inactive">shopping_cart<a href="#"></a></span>
+      <div>
+        <a href="#">Login</a>
+        <span>|</span>
+        <a href="#">Sign Up</a>
+      </div>
+    </div>
+    <main>
+      <div>
+        <% categories.forEach((category) => { %>
+          <div class="category">
+            <img src="./image/<%= category.dataValues.image %>" alt="<%= category.dataValues.name %>">
+            <a href="#">
+              <div><%= category.dataValues.name %></div>
+            </a>
+          </div>
+        <% }) %>
+      </div>
+      <article>
+        <% coupons.forEach((coupon) => { %>
+          <div class="coupon">
+            <a href="#">
+              <img src="./image/<%= coupon.dataValues.image %>" alt="<%= coupon.dataValues.name %>">
+              <div>
+                <h4><%= coupon.dataValues.name %></h4>
+                <span class="material-icons md-dark md-inactive md-18">favorite_border</span>
+              </div>
+              <div>
+                <h5><%= coupon.dataValues.short_description %></h5>
+              </div>
+            </a>
+            <div>
+              <div><%= coupon.dataValues.price %>$</div>
+              <form>
+                <button>Add to cart</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </article>
+      <div class="loading"><img src="image/loading_icon.gif" alt="Loading..."></div>
+    </main>
+    <button class="top"><span class="material-icons md-36">arrow_circle_up</span></button>
+    <script src="js/main.js"></script>
+  </body>
+</html>

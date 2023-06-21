@@ -1,0 +1,159 @@
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.material-icons.md-18 {
+  font-size: 18px;
+}
+
+.material-icons.md-36 {
+  font-size: 36px;
+}
+
+.material-icons.md-dark.md-inactive {
+  color: rgba(0, 0, 0, 0.26);
+}
+
+.header {
+  width: 80%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 10px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.header span {
+  cursor: pointer;
+}
+.header ul {
+  display: none;
+  margin: 0 0 0 5px;
+  padding: 0;
+  width: auto;
+  list-style-type: none;
+  position: absolute;
+}
+.header ul li {
+  padding: 5px;
+  background: lightgray;
+}
+.header ul li:hover {
+  background: gray;
+}
+.header a {
+  text-decoration: none;
+  color: black;
+}
+.header .logo {
+  padding: 0 5px;
+  font-size: 24px;
+}
+.header .search {
+  -webkit-box-flex: 2;
+      -ms-flex-positive: 2;
+          flex-grow: 2;
+}
+.header .search > form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.header .search > form > label {
+  width: 40%;
+}
+.header .search > form > label > input {
+  padding: 10px 20px;
+  width: 100%;
+  font-size: 14px;
+  border: 1px solid lightgray;
+  border-right: 0px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.header .search > form > select {
+  text-align: center;
+  font-size: 14px;
+  border: 1px solid lightgray;
+}
+
+main {
+  width: 80%;
+}
+main > menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: space-evenly;
+      -ms-flex-pack: space-evenly;
+          justify-content: space-evenly;
+  background: lightgray;
+}
+main > menu > .category > a {
+  color: black;
+  text-decoration: none;
+}
+main > menu > .category > a img {
+  width: 60%;
+}
+main > article {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  padding: 0 20px;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  gap: 20px;
+}
+main > article > .coupon {
+  width: 15%;
+}
+main > article > .coupon > a {
+  color: black;
+  text-decoration: none;
+}
+main > article > .coupon > a > img {
+  width: 100%;
+}
+main > article > .coupon div {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0 5px;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 10px;
+}
+main > article > .coupon div > h4, main > article > .coupon div h5, main > article > .coupon div h6 {
+  margin: 4px 0;
+}
+main > article > .coupon div > div {
+  padding: 0;
+}
+main > article > .coupon div button {
+  padding: 2px 20px;
+  background: white;
+  border: 1px solid lightgray;
+}

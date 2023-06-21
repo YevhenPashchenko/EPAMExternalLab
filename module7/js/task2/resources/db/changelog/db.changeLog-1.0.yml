@@ -1,0 +1,156 @@
+databaseChangeLog:
+  - changeSet:
+      id: create category, coupon tables
+      author: Yevhen Pashchenko
+      changes:
+        - createTable:
+            tableName: category
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: category_id_pkey
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: createdAt
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updatedAt
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: name
+            constraintName: category_name_unique
+            tableName: category
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: category_name_idx
+            tableName: category
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: category_id_seq
+        - createTable:
+            tableName: coupon
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: coupon_id_pkey
+                    nullable: false
+              - column:
+                  name: company_name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: valid_to
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: decimal(7, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: short_description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: long_description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: createdAt
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updatedAt
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: name
+            constraintName: coupon_name_unique
+            tableName: coupon
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: coupon_name_idx
+            tableName: coupon
+        - createSequence:
+            dataType: int
+            minValue: 1
+            sequenceName: coupon_id_seq
+        - addForeignKeyConstraint:
+            baseColumnNames: category_id
+            baseTableName: coupon
+            constraintName: category_category_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: cascade
+            onUpdate: cascade
+            referencedColumnNames: id
+            referencedTableName: category
+            validateForeignKey: true
+        - sql:
+            endDelimiter: ;
+            sql:
+              insert into category values (nextval('category_id_seq'), 'Beauty Salons', 'beauty_salons.png', now(), now()), 
+              (nextval('category_id_seq'), 'For motorists', 'for_motorists.png', now(), now()), 
+              (nextval('category_id_seq'), 'Sightseeing ride', 'sightseeing_ride.png', now(), now()), 
+              (nextval('category_id_seq'), 'For gourmets', 'for_gourmets.png', now(), now()), 
+              (nextval('category_id_seq'), 'Photo session', 'photo_session.png', now(), now());
+              insert into coupon values (nextval('coupon_id_seq'), 'Company name', 'Zoo session', now(), 15, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'zoo_session.png', 3, now(), now()), 
+              (nextval('coupon_id_seq'), 'Company name', 'Cooking courses', now(), 15, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'cooking_courses.png', 4, now(), now()), 
+              (nextval('coupon_id_seq'), 'Company name', 'Yoga session', now(), 12, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'yoga_session.png', 5, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Gym discount', now(), 12, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'gym_discount.png', 1, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Photo session', now(), 12, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'photo_session_1.png', 5, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Planetarium', now(), 12, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'planetarium.png', 3, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Walk on the horse', now(), 10, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'walk_on_the_horse.png', 3, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Massage', now(), 10, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'massage.png', 1, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Air balloon ride', now(), 10, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'air_balloon_ride.png', 3, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Extreme driving', now(), 10, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'extreme_driving.png', 2, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Driver license', now(), 10, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'driver_license.png', 2, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Motorbike ride', now(), 10, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'motorbike_ride.png', 2, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Make up.png', now(), 10, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'make_up.png', 1, now(), now()),
+              (nextval('coupon_id_seq'), 'Company name', 'Helicopter ride', now(), 10, 'Lorem ipsum dolor sit amet. Amet, consectetur adipiscing elit.', 'Long description', 'helicopter_ride.png', 3, now(), now());

@@ -1,0 +1,184 @@
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.material-icons.md-18 {
+  font-size: 18px;
+}
+
+.material-icons.md-36 {
+  font-size: 36px;
+}
+
+.material-icons.md-dark.md-inactive {
+  color: rgba(0, 0, 0, 0.26);
+}
+
+.header {
+  width: 80%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 10px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.header span {
+  cursor: pointer;
+}
+.header ul {
+  display: none;
+  margin: 0 0 0 5px;
+  padding: 0;
+  width: auto;
+  list-style-type: none;
+  position: absolute;
+}
+.header ul li {
+  padding: 5px;
+  background: lightgray;
+}
+.header ul li:hover {
+  background: gray;
+}
+.header a {
+  text-decoration: none;
+  color: black;
+}
+.header .logo {
+  padding: 0 5px;
+  font-size: 24px;
+}
+.header .search {
+  -webkit-box-flex: 2;
+      -ms-flex-positive: 2;
+          flex-grow: 2;
+}
+.header .search > form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.header .search > form > label {
+  width: 40%;
+}
+.header .search > form > label > input {
+  padding: 10px 20px;
+  width: 100%;
+  font-size: 14px;
+  border: 1px solid lightgray;
+  border-right: 0px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.header .search > form > select {
+  text-align: center;
+  font-size: 14px;
+  border: 1px solid lightgray;
+}
+
+main {
+  width: 80%;
+}
+main > h2 {
+  padding: 10px 220px;
+  background: lightgray;
+  font-weight: normal;
+  color: white;
+}
+main form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 35%;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: column wrap;
+          flex-flow: column wrap;
+  gap: 20px;
+  height: 400px;
+  padding-left: 220px;
+}
+main form > label {
+  width: 100%;
+  position: relative;
+  font-size: 14px;
+  color: gray;
+}
+main form > label > input {
+  width: 90%;
+  padding: 10px 20px;
+  border: 1px solid lightgray;
+}
+main form > label > input[type=file]::-webkit-file-upload-button {
+  display: none;
+}
+main form > label > input[type=file]::file-selector-button {
+  display: none;
+}
+main form > label > input[type=datetime-local]::-webkit-calendar-picker-indicator {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  right: 5%;
+  background-image: url(../image/baseline_event_black_24dp.png);
+  opacity: 0.26;
+}
+main form > label > span {
+  position: absolute;
+  top: 45%;
+  right: 5%;
+}
+main form > label > select {
+  width: 98%;
+  padding: 9px 20px;
+  border: 1px solid lightgray;
+}
+main form > label > textarea {
+  width: 97%;
+  height: 105px;
+  border: 1px solid lightgray;
+}
+main form > div {
+  width: 56%;
+  margin-top: 400px;
+  position: absolute;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  gap: 20px;
+}
+main form > div > button {
+  padding: 5px 40px;
+  font-size: 18px;
+}
+main form > div > button.cancel {
+  background: white;
+  border: 1px solid lightgray;
+  color: gray;
+}
+main form > div > button.sign-up {
+  background: lightgreen;
+  border: 1px solid lightgreen;
+  color: white;
+}

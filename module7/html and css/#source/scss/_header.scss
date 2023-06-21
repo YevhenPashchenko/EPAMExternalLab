@@ -1,0 +1,70 @@
+@import "_constant";
+
+.header {
+	width: 80%;
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	justify-content: space-between;
+
+	span {
+		cursor: pointer;
+	}
+
+	ul {
+		display: none;
+		margin: 0 0 0 5px;
+		padding: 0;
+		width: auto;
+		list-style-type: none;
+		position: absolute;
+
+		li {
+			padding: 5px;
+			background: $bg-lightgray;
+
+			&:hover {
+				background: $bg-gray;
+			}
+		}
+	}
+
+	a {
+		text-decoration: none;
+		color: $color-black;
+	}
+
+	.logo {
+		padding: 0 5px;
+		font-size: $fs-24;
+	}
+
+	.search {
+		flex-grow: 2;
+
+		> form {
+			display: flex;
+			width: 100%;
+			justify-content: center;
+
+			> label {
+				width: 40%;
+
+				> input {
+					padding: 10px 20px;
+					width: 100%;
+					font-size: $fs-14;
+					border: $border-lightgray;
+					border-right: 0px;
+					box-sizing: border-box;
+				}
+			}
+
+			> select {
+				text-align: center;
+				font-size: $fs-14;
+				border: $border-lightgray;
+			}
+		}
+	}
+}
